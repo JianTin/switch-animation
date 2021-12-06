@@ -55,11 +55,12 @@ export type easingVal = [number, number, number, number] | string
 // SwitchAnimation 类
 interface SwitchAnimation {
     // new(config: animationConfig<T>):SwitchAnimation
-    getInstanceEvent:()=>({
-        isAnimationShow:()=>boolean
-        startAnimation: ()=>void
-        switchAnimation:()=>void
-    })
+    getInstanceEvent:()=>(getInstanceEventValue)
+}
+export type getInstanceEventValue = {
+    isAnimationShow:()=>boolean
+    startAnimation: ()=>void
+    switchAnimation:()=>void
 }
 
 // store type
