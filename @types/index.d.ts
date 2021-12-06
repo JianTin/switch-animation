@@ -68,8 +68,9 @@ export interface switchAnimationInstance {
     getInstanceEvent:()=>(getInstanceEventValue)
 }
 
-declare module "swtich-animation" {
-    export default class <T extends configNamespace.elementKey>{
-        constructor(animationConfig: configNamespace.animationConfig<T>): switchAnimationInstance
+declare module "switch-animation" {
+    export default class  SwitchAnimation <T extends configNamespace.elementKey>{
+        constructor(animationConfig: configNamespace.animationConfig<T>)
+        getInstanceEvent:()=>(getInstanceEventValue)
     }
 }

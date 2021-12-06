@@ -1,9 +1,9 @@
 {
-  "name": "swtich-animation",
-  "version": "1.0.0",
+  "name": "switch-animation",
+  "version": "1.0.3",
   "description": "支持复杂的切换动画，保证中间不会产生断层",
-  "main": "lib/index.js",
-  "module": "es/index.js",
+  "main": "lib/bundle.js",
+  "module": "es/bundle.js",
   "types": "@types/index.d.ts",
   "typings": "@types/index.d.ts",
   "scripts": {
