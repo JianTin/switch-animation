@@ -1,16 +1,16 @@
 import storeInstance from "./store"
 import setStyleInstance from "./setStyle"
-import {elementKey, targetStyle, AnimationCallback, animationConfig, styleName} from './base'
 import isRunMiddleInstance from './isRunMiddleAnimation'
+import {configNamespace, styleNamespace} from '../@types/index'
 
-class Public <T extends elementKey>{
+class Public <T extends configNamespace.elementKey>{
     duration: number
     currentDate: number
     startDate: number
     endDate: number
     element: HTMLElementTagNameMap[T]
-    targetStyle: targetStyle | null
-    AnimationCallback: AnimationCallback
+    targetStyle: configNamespace.targetStyle | null
+    AnimationCallback: configNamespace.AnimationCallback
     // 正向 还是 反向
     isPositive: boolean
     // 是否第一次
@@ -19,7 +19,7 @@ class Public <T extends elementKey>{
     animationShow: boolean
     // 实例分级
     durationType: string
-    constructor(elementConfig: animationConfig<T>){
+    constructor(elementConfig: configNamespace.animationConfig<T>){
         const {
             element,
             targetStyle,
@@ -50,7 +50,7 @@ class Public <T extends elementKey>{
         this.initEvent(elementConfig)
     }
     // 初始化，保存当前 type实例，每个styleName 每毫秒计算值
-    initEvent = (elementConfig: animationConfig<T>) => {
+    initEvent = (elementConfig: configNamespace.animationConfig<T>) => {
         const {targetStyle, duration, durationType} = this
         // 初始化保存 globalInstance
         if(durationType === 'all'){
@@ -62,11 +62,11 @@ class Public <T extends elementKey>{
         }
         // 往storeStyle存储
         Object.keys(targetStyle).forEach(styleName=>{
-            const paramsStyle = targetStyle[styleName as styleName]
+            const paramsStyle = targetStyle[styleName as styleNamespace.styleName]
             if(!paramsStyle)return;
             // 兼容上方 ts
             const {endValue, startValue, unit} = paramsStyle
-            storeInstance.addStoreStyle(durationType, styleName as styleName, {startValue, endValue}, unit, duration)
+            storeInstance.addStoreStyle(durationType, styleName as styleNamespace.styleName, {startValue, endValue}, unit, duration)
         })
         // 存储 instance，继承实例 具有全部方法
         storeInstance.addStoreInstance(durationType, this as any)
@@ -87,18 +87,18 @@ class Public <T extends elementKey>{
         const {easingFn, styleList} = typeStore
         if(!easingFn)return;
         Object.keys(styleList).forEach(styleName=>{
-            const styleStore = styleList[styleName as styleName]
+            const styleStore = styleList[styleName as styleNamespace.styleName]
             if(!styleStore) return;
             // 上面是防护
-            setStyleInstance.set(element, styleStore, styleName as styleName, duration, direction, easingFn)
+            setStyleInstance.set(element, styleStore, styleName as styleNamespace.styleName, duration, direction, easingFn)
             if(onAnimation)onAnimation();
         })
     }
 }
 
 // 整体时间计算，调用执行动画
-class Switch<T extends elementKey> extends Public<T> {
-    constructor(elementConfig: animationConfig<T>){
+class Switch<T extends configNamespace.elementKey> extends Public<T> {
+    constructor(elementConfig: configNamespace.animationConfig<T>){
         super(elementConfig)
     }
     // start
@@ -160,9 +160,9 @@ class Switch<T extends elementKey> extends Public<T> {
             if(targetStyle){
                 const {styleList: typeStore, easingFn} = storeInstance.store[durationType]
                 Object.keys(typeStore).forEach(styleName=>{
-                    const styleStore = typeStore[styleName as styleName]
+                    const styleStore = typeStore[styleName as styleNamespace.styleName]
                     if(!styleStore || !easingFn )return;
-                    setStyleInstance.set(element, styleStore, styleName  as styleName, runDate, isPositive, easingFn)
+                    setStyleInstance.set(element, styleStore, styleName as styleNamespace.styleName, runDate, isPositive, easingFn)
                 })
                 if(onAnimation)onAnimation()
             } else {
@@ -174,8 +174,8 @@ class Switch<T extends elementKey> extends Public<T> {
     }
 }
 
-export default class SwitchAnimation<T extends elementKey> extends Switch<T> {
-    constructor(elementConfig: animationConfig<T>){
+export default class SwitchAnimation<T extends configNamespace.elementKey> extends Switch<T> {
+    constructor(elementConfig: configNamespace.animationConfig<T>){
         super(elementConfig)
     }
     getInstanceEvent = ()=>{

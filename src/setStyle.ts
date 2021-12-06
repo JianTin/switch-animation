@@ -1,7 +1,8 @@
 // 设置 value值
 import calculateInstance from './calculate'
-import {elementKey, styleName, styleStore} from './base'
 import {EasingFunction} from 'bezier-easing'
+import {configNamespace, styleNamespace} from '../@types/index'
+import {storeNamespace} from '../@types/store'
 
 class SetStyleValue {
     transformKey: Array<string>
@@ -13,8 +14,8 @@ class SetStyleValue {
             'skewX', 'skewY'
         ]
     }
-    set<T extends elementKey>(
-        element: HTMLElementTagNameMap[T], styleStore: styleStore, styleName: styleName, runDate: number, direction:boolean, easingFn: EasingFunction
+    set<T extends configNamespace.elementKey>(
+        element: HTMLElementTagNameMap[T], styleStore: storeNamespace.styleStore, styleName: styleNamespace.styleName, runDate: number, direction:boolean, easingFn: EasingFunction
     ){
         const {unit} = styleStore
         const val = calculateInstance.calculateVal(styleStore, styleName, runDate, direction, easingFn)

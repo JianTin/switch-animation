@@ -1,23 +1,26 @@
 // 运算最终 value
 import storeInstance from './store'
-import {styleName, styleStore, colorStore, baseStore, color} from './base'
+// import {styleName, styleStore, colorStore, baseStore, color} from './base'
+import {styleNamespace} from '../@types/index'
+import {storeNamespace} from '../@types/store'
+import {calculateNamespace} from '../@types/calculate'
 import {EasingFunction} from 'bezier-easing'
 
 class Calculate {
     constructor(){}
-    calculateVal(styleStore: styleStore, name: styleName,runDate: number, direction: boolean, easingFn: EasingFunction){
+    calculateVal(styleStore: storeNamespace.styleStore, name: styleNamespace.styleName,runDate: number, direction: boolean, easingFn: EasingFunction){
         // 选择不同
         // as color 是因为ts原因
-        if(storeInstance.colorNameArray.includes(name as color)) {
+        if(storeInstance.colorNameArray.includes(name as styleNamespace.color)) {
             // 颜色
-            return this.colorCalculate(styleStore as colorStore, runDate, direction, easingFn)
+            return this.colorCalculate(styleStore as calculateNamespace.colorStore, runDate, direction, easingFn)
         } else {
             // 基础
-            return this.baseStyleCalulate(styleStore as baseStore, runDate, direction, easingFn)
+            return this.baseStyleCalulate(styleStore as calculateNamespace.baseStyleStore, runDate, direction, easingFn)
         }
     }
     // 计算base style值
-    baseStyleCalulate(store:baseStore, runDate:number, direction: boolean, easingFn: EasingFunction){
+    baseStyleCalulate(store: calculateNamespace.baseStyleStore, runDate:number, direction: boolean, easingFn: EasingFunction){
         const {startValue, endValue, millisecond} = store
         // 获取 每毫秒移动距离
         const calculate = millisecond * runDate
@@ -36,7 +39,7 @@ class Calculate {
         return easingRatio * endValue
     }
     // 计算color值
-    colorCalculate(store:colorStore, runDate:number, direction: boolean, easingFn: EasingFunction){
+    colorCalculate(store: calculateNamespace.colorStore, runDate:number, direction: boolean, easingFn: EasingFunction){
         const {startValue, endValue, millisecond} = store
         // 得出当前毫秒运算的rgb值
         const calculateMillisecond = millisecond.map(v=>v*runDate)

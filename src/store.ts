@@ -13,7 +13,8 @@
  * 0-1000': 
 */
 import easing from './easing'
-import {styleName, color, typeStore, colorValue, SwitchAnimation, easingVal} from './base'
+import {switchAnimationInstance, styleNamespace, configNamespace} from '../@types/index'
+import {storeNamespace} from '../@types/store'
 
 // 传递得value对象
 type paramsValueObj = {
@@ -21,11 +22,11 @@ type paramsValueObj = {
 }
 
 class Store {
-    globalStore: SwitchAnimation | null
+    globalStore: switchAnimationInstance | null
     store: {
-        [type: string]: typeStore
+        [type: string]: storeNamespace.typeStore
     }
-    colorNameArray: Array<color>
+    colorNameArray: Array<styleNamespace.color>
     constructor(){
         // 全局的
         this.globalStore = null
@@ -43,20 +44,20 @@ class Store {
        }
     }
     // 全局的store，第一次初始化调用
-    initGlobalStore = (instance: SwitchAnimation)=>{
+    initGlobalStore = (instance: switchAnimationInstance)=>{
         this.globalStore = instance
     }
     // 添加storeStyle
-    addStoreStyle = (type: string, name: styleName, valueObj: paramsValueObj, unit: string, duration: number) => {
+    addStoreStyle = (type: string, name: styleNamespace.styleName, valueObj: paramsValueObj, unit: string, duration: number) => {
        this.createType(type)
-       if(this.colorNameArray.includes(name as color)) {// 判断是color么，是的话处理为需要的格式
-           this.generateColorStyle(type, name as color, valueObj, unit, duration)
+       if(this.colorNameArray.includes(name as styleNamespace.color)) {// 判断是color么，是的话处理为需要的格式
+           this.generateColorStyle(type, name as styleNamespace.color, valueObj, unit, duration)
        } else {
            this.generateBaseStyle(type, name, valueObj, unit, duration)
        }
     }
     // 添加当前实例
-    addStoreInstance = (type: string, instance: SwitchAnimation)=> {
+    addStoreInstance = (type: string, instance: switchAnimationInstance)=> {
        this.createType(type)
        this.store[type]['instance'] = instance
     }
@@ -79,11 +80,11 @@ class Store {
         }
     }
     // 添加贝塞尔函数
-    addStoreEasing = (type: string, easingVal: easingVal) => {
+    addStoreEasing = (type: string, easingVal: configNamespace.easingVal) => {
         this.store[type]['easingFn'] = easing.createEasing(easingVal)
     }
     // 生成基础style每毫秒值
-    generateBaseStyle(type: string, name: styleName, valueObj: paramsValueObj, unit:string, duration: number){
+    generateBaseStyle(type: string, name: styleNamespace.styleName, valueObj: paramsValueObj, unit:string, duration: number){
         const [startValue, endValue] = Object.values(valueObj).map(v=>Number(v))
         const millisecond = (endValue - startValue) / duration
         this.store[type]['styleList'][name] = {
@@ -91,7 +92,7 @@ class Store {
         }
     }
     // 生成color每毫秒值
-    generateColorStyle(type: string, name: color, valueObj: paramsValueObj, unit: string, duration: number){
+    generateColorStyle(type: string, name: styleNamespace.color, valueObj: paramsValueObj, unit: string, duration: number){
         // startValue: rgba(0,0,0,1) -> [0,0,0,0]
         const [startValue, endValue] = Object.values(valueObj).map(val=>val.replace('rgba', '').replace(/[\(|\)]/g, '').split(',').map<number>(v=>Number(v.trim())))
         // sta: [0,0,0,0] end: [255,255,255,255]
@@ -102,9 +103,9 @@ class Store {
         if(startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
             if(!this.store[type]) return;
             this.store[type]['styleList'][name] = {
-                startValue: startValue as colorValue,
-                endValue: endValue as colorValue,
-                millisecond: millisecond as colorValue,
+                startValue: startValue as storeNamespace.colorValue,
+                endValue: endValue as storeNamespace.colorValue,
+                millisecond: millisecond as storeNamespace.colorValue,
                 unit
             }
         }

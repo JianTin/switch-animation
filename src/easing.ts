@@ -1,8 +1,9 @@
 import BezierEasing from 'bezier-easing'
+import {bulitInEasing} from '../@types/easing'
 
 class Easing {
     bulitInEasing: {
-        [key: string]: [number, number, number, number]
+        [key in bulitInEasing]: [number, number, number, number]
     }
     constructor(){
         this.bulitInEasing = {
@@ -41,7 +42,7 @@ class Easing {
             return BezierEasing(...easing)
         } else {
             // 防止传入无效 stringKey
-            let easingVal = this.bulitInEasing[easing]
+            let easingVal = this.bulitInEasing[easing as bulitInEasing]
             easingVal = easingVal ? easingVal : this.bulitInEasing['linear']
             return BezierEasing(...easingVal)
         }

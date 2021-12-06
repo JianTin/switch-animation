@@ -1,12 +1,12 @@
-import {elementKey, animationConfig} from './base'
 import SwitchAnimation from './index'
 import storeInstance from './store'
+import {configNamespace} from '../@types/index'
 
 // 用于做 运行的中间 动画，处理
 class IsRunMiddleAnimation {
     constructor(){}
     // 用于生成，具有中间动画的 实例 和 运行时间对象
-    middleAnimationInit<T  extends elementKey>(elementConfig: animationConfig<T>){
+    middleAnimationInit<T  extends configNamespace.elementKey>(elementConfig: configNamespace.animationConfig<T>){
         const {element, middleStyle} = elementConfig
         if(!middleStyle)return;
         Object.keys(middleStyle).forEach(durationType=>{

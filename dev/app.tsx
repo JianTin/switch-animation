@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import SwitchAnimation from  '../src/index'
-import {getInstanceEventValue} from '../src/base'
+import {getInstanceEventValue} from '../@types'
 
 export default function(){
     const elementRef = useRef<HTMLDivElement | null>(null)

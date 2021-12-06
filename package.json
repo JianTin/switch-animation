@@ -1,9 +1,11 @@
 {
-  "name": "animation",
+  "name": "swtich-animation",
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
   "module": "es/index.js",
+  "types": "@types/index.d.ts",
+  "typings": "@types/index.d.ts",
   "scripts": {
     "compile": "gulp --gulpfile config/gulpfile.js compile",
     "dev": "gulp --gulpfile config/gulpfile.js devCompile"
