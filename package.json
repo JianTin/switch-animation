@@ -1,7 +1,7 @@
 {
   "name": "swtich-animation",
   "version": "1.0.0",
-  "description": "",
+  "description": "支持复杂的切换动画，保证中间不会产生断层",
   "main": "lib/index.js",
   "module": "es/index.js",
   "types": "@types/index.d.ts",
