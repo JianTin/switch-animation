@@ -31,6 +31,8 @@ class Calculate {
         } else {
             styleVal = endValue - calculate
         }
+        // distance 为0 代表设置值一模一样，直接返回 不需要做曲线处理
+        if(distance === 0) return styleVal;
         // 解释
         // 计算出 当前动画值 在 距离值中占多少比率 = 当前动画比率
         // 当前动画比率 传入 曲线函数 = 曲线中的占比
@@ -48,9 +50,13 @@ class Calculate {
                 const calulateColorMode = calculateMillisecond[index]
                 const distanceValue = distance[index]
                 const runColorVal = colorMode + calulateColorMode
-                // 计算曲线值
-                const easignRatio = easingFn(runColorVal / distanceValue)
-                prev += distanceValue * easignRatio
+                if(distanceValue === 0){
+                    prev += runColorVal
+                } else {
+                    // 计算曲线值
+                    const easignRatio = easingFn(runColorVal / distanceValue)
+                    prev += distanceValue * easignRatio
+                }
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';
                 return prev
@@ -60,9 +66,13 @@ class Calculate {
                 const calulateColorMode = calculateMillisecond[index]
                 const distanceValue = distance[index]
                 const runColorVal = colorMode - calulateColorMode
-                // 计算曲线值
-                const easignRatio = easingFn(runColorVal / distanceValue)
-                prev += distanceValue * easignRatio
+                if(distanceValue === 0){
+                    prev += runColorVal
+                } else {
+                    // 计算曲线值
+                    const easignRatio = easingFn(runColorVal / distanceValue)
+                    prev += distanceValue * easignRatio
+                }
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';
                 return prev

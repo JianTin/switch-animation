@@ -69,7 +69,7 @@ class Store {
     // 添加实例对应的 正反方向 --- 开始、结束值 用于做是否 运行动画判断
     addStoreDirection = (type: string, startDuration: number, endDuration: number)=>{
         this.createType(type)
-       const allInstance = this.globalStore
+        const allInstance = this.globalStore
         if(!allInstance) return;
         const allDuration = (allInstance as any).duration
         // 正向 800 - 1000

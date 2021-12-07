@@ -1,6 +1,6 @@
 {
   "name": "switch-animation",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "支持复杂的切换动画，保证中间不会产生断层",
   "main": "lib/bundle.js",
   "module": "es/bundle.js",

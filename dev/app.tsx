@@ -16,18 +16,23 @@ export default function(){
             element: elementRef.current as HTMLDivElement,
             duration: 1000,
             middleStyle: {
-                '0-500': {
-                    'background-color': {
-                        startValue: 'red',
-                        endValue: 'rgba(35, 81, 91, 0.8)',
-                        unit: ''
-                    }
-                },
-                '500-1000': {
-                    'background-color': {
-                      startValue: "rgba(35, 81, 91, 0.8)",
-                      endValue: "blue",
-                      unit: ""
+                // '0-500': {
+                //     'background-color': {
+                //         startValue: 'red',
+                //         endValue: 'rgba(35, 81, 91, 0.8)',
+                //         unit: ''
+                //     }
+                // },
+                '0-1000': {
+                    "translateX": {
+                        startValue: '20',
+                        endValue: '20',
+                        unit: 'px'
+                    },
+                    "background-color": {
+                        startValue: "rgba(255,0,0,1)",
+                        endValue: "rgba(111,191,111,1)",
+                        unit: ""
                     }
                 }
                 // '0-1000': {
