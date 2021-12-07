@@ -76,7 +76,7 @@ class Public <T extends configNamespace.elementKey>{
     // 动画结束 触发
     endInit = () => {
         const {onEnd} = this.AnimationCallback
-        if(onEnd) onEnd();
+        if(onEnd) onEnd(this.element);
     }
     // 重置元素style -> 开始 / 结束
     reset = (direction: boolean)=> {
@@ -91,7 +91,7 @@ class Public <T extends configNamespace.elementKey>{
             if(!styleStore) return;
             // 上面是防护
             setStyleInstance.set(element, styleStore, styleName as styleNamespace.styleName, duration, direction, easingFn)
-            if(onAnimation)onAnimation();
+            if(onAnimation)onAnimation(element);
         })
     }
 }
@@ -105,7 +105,6 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
     start = ()=> {
         this.isInit = false
         this.isPositive = true
-        const onStart = this.AnimationCallback.onStart
         // 计算时间
         const currentDate = new Date().valueOf()
         this.endDate = currentDate + this.duration
@@ -117,8 +116,6 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
         }
         // 动画
         this.runSwitchAnimation(true)
-        // 触发外部事件
-        if(onStart) onStart();
     }
     // switch
     switch = ()=> {
@@ -136,7 +133,7 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
             this.startDate = this.endDate - this.duration
         }
         this.runSwitchAnimation(this.isPositive)
-        if(onStart) onStart();
+        if(onStart) onStart(this.element);
     }
     runSwitchAnimation = (direction: boolean)=> {
         requestAnimationFrame(()=>{
@@ -164,7 +161,7 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
                     if(!styleStore || !easingFn )return;
                     setStyleInstance.set(element, styleStore, styleName as styleNamespace.styleName, runDate, isPositive, easingFn)
                 })
-                if(onAnimation)onAnimation()
+                if(onAnimation)onAnimation(element)
             } else {
                 // 运行间断动画
                 Object.keys(storeInstance.store).forEach(middleDuration=>isRunMiddleInstance.runMiddleAnimation(runDate, middleDuration, direction))

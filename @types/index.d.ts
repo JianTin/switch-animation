@@ -43,9 +43,9 @@ export namespace configNamespace {
     }
     // 事件 参数
     type AnimationCallback = {
-        onStart?: ()=>void,
-        onAnimation?: ()=>void,
-        onEnd?: ()=>void
+        onStart?: (element?: HTMLElement)=>void,
+        onAnimation?: (element?: HTMLElement)=>void,
+        onEnd?: (element?: HTMLElement)=>void
     }
     // 配置项
     type animationConfig<T extends elementKey> = {

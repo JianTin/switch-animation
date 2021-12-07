@@ -488,7 +488,7 @@ var Public = function Public(elementConfig) {
     _newArrowCheck(this, _this);
 
     var onEnd = this.AnimationCallback.onEnd;
-    if (onEnd) onEnd();
+    if (onEnd) onEnd(this.element);
   }.bind(this); // 重置元素style -> 开始 / 结束
 
 
@@ -514,7 +514,7 @@ var Public = function Public(elementConfig) {
       if (!styleStore) return; // 上面是防护
 
       setStyleInstance.set(element, styleStore, styleName, duration, direction, easingFn);
-      if (onAnimation) onAnimation();
+      if (onAnimation) onAnimation(element);
     }.bind(this));
   }.bind(this);
 
@@ -568,8 +568,7 @@ var Switch = /*#__PURE__*/function (_Public) {
       _newArrowCheck(this, _this5);
 
       _this4.isInit = false;
-      _this4.isPositive = true;
-      var onStart = _this4.AnimationCallback.onStart; // 计算时间
+      _this4.isPositive = true; // 计算时间
 
       var currentDate = new Date().valueOf();
       _this4.endDate = currentDate + _this4.duration;
@@ -586,10 +585,7 @@ var Switch = /*#__PURE__*/function (_Public) {
       } // 动画
 
 
-      _this4.runSwitchAnimation(true); // 触发外部事件
-
-
-      if (onStart) onStart();
+      _this4.runSwitchAnimation(true);
     }.bind(this); // switch
 
 
@@ -612,7 +608,7 @@ var Switch = /*#__PURE__*/function (_Public) {
 
       _this4.runSwitchAnimation(_this4.isPositive);
 
-      if (onStart) onStart();
+      if (onStart) onStart(_this4.element);
     }.bind(this);
 
     _this4.runSwitchAnimation = function (direction) {
@@ -665,7 +661,7 @@ var Switch = /*#__PURE__*/function (_Public) {
             if (!styleStore || !easingFn) return;
             setStyleInstance.set(element, styleStore, styleName, runDate, isPositive, easingFn);
           }.bind(this));
-          if (onAnimation) onAnimation();
+          if (onAnimation) onAnimation(element);
         } else {
           // 运行间断动画
           Object.keys(storeInstance.store).forEach(function (middleDuration) {
