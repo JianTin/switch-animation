@@ -153,12 +153,14 @@ var Store = /*#__PURE__*/function () {
 
     var millisecond = (endValue - startValue) / duration;
     var distance = endValue > startValue ? endValue - startValue : startValue - endValue;
+    var minValDistanceZero = endValue > startValue ? startValue : endValue;
     this.store[type]['styleList'][name] = {
       startValue: startValue,
       endValue: endValue,
       millisecond: millisecond,
       unit: unit,
-      distance: distance
+      distance: distance,
+      minValDistanceZero: minValDistanceZero
     };
   } // 处理颜色 -> rgba()
   ;
@@ -199,13 +201,24 @@ var Store = /*#__PURE__*/function () {
       _newArrowCheck(this, _this4);
 
       return val / duration;
-    }.bind(this));
-    var distance = startValue.map(function (startColor, index) {
+    }.bind(this)); // const distance = startValue.map((startColor, index)=>{
+    //     const endColor = endValue[index]
+    //     return endColor > startColor ? endColor - startColor : startColor - endColor
+    // })
+
+    var _startValue$reduce = startValue.reduce(function (prev, startColor, index) {
       _newArrowCheck(this, _this4);
 
       var endColor = endValue[index];
-      return endColor > startColor ? endColor - startColor : startColor - endColor;
-    }.bind(this));
+      prev['distance'].push(endColor > startColor ? endColor - startColor : startColor - endColor);
+      prev['minValDistanceZero'].push(endColor > startColor ? startColor : endColor);
+      return prev;
+    }.bind(this), {
+      distance: [],
+      minValDistanceZero: []
+    }),
+        distance = _startValue$reduce.distance,
+        minValDistanceZero = _startValue$reduce.minValDistanceZero;
 
     if (startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
       if (!this.store[type]) return;
@@ -214,6 +227,7 @@ var Store = /*#__PURE__*/function () {
         endValue: endValue,
         millisecond: millisecond,
         distance: distance,
+        minValDistanceZero: minValDistanceZero,
         unit: unit
       };
     }
@@ -246,7 +260,8 @@ var Calculate = /*#__PURE__*/function () {
     var startValue = store.startValue,
         endValue = store.endValue,
         millisecond = store.millisecond,
-        distance = store.distance; // 获取 每毫秒移动距离
+        distance = store.distance,
+        minValDistanceZero = store.minValDistanceZero; // 获取 每毫秒移动距离
 
     var calculate = millisecond * runDate;
     var styleVal = 0;
@@ -260,12 +275,12 @@ var Calculate = /*#__PURE__*/function () {
 
 
     if (distance === 0) return styleVal; // 解释
-    // 计算出 当前动画值 在 距离值中占多少比率 = 当前动画比率
+    // 计算出 当前动画值(不能 大于 距离值，所以需要减少到距离值内) 在 距离值中占多少比率 = 当前动画比率
     // 当前动画比率 传入 曲线函数 = 曲线中的占比
     // 距离值 * 曲线中占比 = 当前应该曲线动画值
 
-    var easingRatio = easingFn(styleVal / distance);
-    return easingRatio * distance;
+    var easingRatio = easingFn((styleVal - minValDistanceZero) / distance);
+    return easingRatio * distance + minValDistanceZero;
   } // 计算color值
   ;
 
@@ -275,7 +290,8 @@ var Calculate = /*#__PURE__*/function () {
     var startValue = store.startValue,
         endValue = store.endValue,
         millisecond = store.millisecond,
-        distance = store.distance; // 得出当前毫秒运算的rgb值
+        distance = store.distance,
+        minValDistanceZero = store.minValDistanceZero; // 得出当前毫秒运算的rgb值
 
     var calculateMillisecond = millisecond.map(function (v) {
       _newArrowCheck(this, _this);
@@ -289,18 +305,21 @@ var Calculate = /*#__PURE__*/function () {
 
         var calulateColorMode = calculateMillisecond[index];
         var distanceValue = distance[index];
+        var minVal = minValDistanceZero[index];
         var runColorVal = colorMode + calulateColorMode;
+        console.log(runColorVal, colorMode, calulateColorMode);
 
         if (distanceValue === 0) {
           prev += runColorVal;
         } else {
           // 计算曲线值
-          var easignRatio = easingFn(runColorVal / distanceValue);
-          prev += distanceValue * easignRatio;
+          var easignRatio = easingFn((runColorVal - minVal) / distanceValue);
+          prev += distanceValue * easignRatio + minVal;
         }
 
         if (index !== 3) prev += ',';
         if (index === 3) prev += ')';
+        console.log(prev);
         return prev;
       }.bind(this), 'rgba(');
     } else {
@@ -309,14 +328,15 @@ var Calculate = /*#__PURE__*/function () {
 
         var calulateColorMode = calculateMillisecond[index];
         var distanceValue = distance[index];
+        var minVal = minValDistanceZero[index];
         var runColorVal = colorMode - calulateColorMode;
 
         if (distanceValue === 0) {
           prev += runColorVal;
         } else {
           // 计算曲线值
-          var easignRatio = easingFn(runColorVal / distanceValue);
-          prev += distanceValue * easignRatio;
+          var easignRatio = easingFn((runColorVal - minVal) / distanceValue);
+          prev += distanceValue * easignRatio + minVal;
         }
 
         if (index !== 3) prev += ',';

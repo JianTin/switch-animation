@@ -24,15 +24,16 @@ export default function(){
                 //     }
                 // },
                 '0-1000': {
-                    "translateX": {
-                        startValue: '20',
-                        endValue: '20',
-                        unit: 'px'
-                    },
+                    easing: "easeInOutBack",
                     "background-color": {
-                        startValue: "rgba(255,0,0,1)",
+                        startValue: "red",
                         endValue: "rgba(111,191,111,1)",
                         unit: ""
+                    },
+                    translateX: {
+                        startValue: '-100',
+                        endValue: '-50',
+                        unit: 'px'
                     }
                 }
                 // '0-1000': {
@@ -57,7 +58,8 @@ export default function(){
         <div ref={elementRef} style={{
             width:'100px',
             height:'100px',
-            background:'red'
+            background:'red',
+            transform: 'translateX(-100px)'
         }}>1231232</div>
     </> 
 }

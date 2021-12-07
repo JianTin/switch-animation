@@ -21,7 +21,7 @@ class Calculate {
     }
     // 计算base style值
     baseStyleCalulate(store: calculateNamespace.baseStyleStore, runDate:number, direction: boolean, easingFn: EasingFunction){
-        const {startValue, endValue, millisecond, distance} = store
+        const {startValue, endValue, millisecond, distance, minValDistanceZero} = store
         // 获取 每毫秒移动距离
         const calculate = millisecond * runDate
         let styleVal = 0
@@ -34,44 +34,48 @@ class Calculate {
         // distance 为0 代表设置值一模一样，直接返回 不需要做曲线处理
         if(distance === 0) return styleVal;
         // 解释
-        // 计算出 当前动画值 在 距离值中占多少比率 = 当前动画比率
+        // 计算出 当前动画值(不能 大于 距离值，所以需要减少到距离值内) 在 距离值中占多少比率 = 当前动画比率
         // 当前动画比率 传入 曲线函数 = 曲线中的占比
         // 距离值 * 曲线中占比 = 当前应该曲线动画值
-        const easingRatio = easingFn(styleVal / distance)
-        return easingRatio * distance
+        const easingRatio = easingFn((styleVal - minValDistanceZero) / distance)
+        return (easingRatio * distance) + minValDistanceZero
     }
     // 计算color值
     colorCalculate(store: calculateNamespace.colorStore, runDate:number, direction: boolean, easingFn: EasingFunction){
-        const {startValue, endValue, millisecond, distance} = store
+        const {startValue, endValue, millisecond, distance, minValDistanceZero} = store
         // 得出当前毫秒运算的rgb值
         const calculateMillisecond = millisecond.map(v=>v*runDate)
         if(direction){
             return startValue.reduce<string>((prev, colorMode, index)=>{
                 const calulateColorMode = calculateMillisecond[index]
                 const distanceValue = distance[index]
+                const minVal = minValDistanceZero[index]
                 const runColorVal = colorMode + calulateColorMode
+                console.log(runColorVal, colorMode, calulateColorMode)
                 if(distanceValue === 0){
                     prev += runColorVal
                 } else {
                     // 计算曲线值
-                    const easignRatio = easingFn(runColorVal / distanceValue)
-                    prev += distanceValue * easignRatio
+                    const easignRatio = easingFn((runColorVal - minVal) / distanceValue)
+                    prev += (distanceValue * easignRatio) + minVal
                 }
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';
+                console.log(prev)
                 return prev
             }, 'rgba(')
         } else {
             return endValue.reduce<string>((prev, colorMode, index)=>{
                 const calulateColorMode = calculateMillisecond[index]
                 const distanceValue = distance[index]
+                const minVal = minValDistanceZero[index]
                 const runColorVal = colorMode - calulateColorMode
                 if(distanceValue === 0){
                     prev += runColorVal
                 } else {
                     // 计算曲线值
-                    const easignRatio = easingFn(runColorVal / distanceValue)
-                    prev += distanceValue * easignRatio
+                    const easignRatio = easingFn((runColorVal - minVal) / distanceValue)
+                    prev += (distanceValue * easignRatio ) + minVal
                 }
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';

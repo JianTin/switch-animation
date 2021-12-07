@@ -93,8 +93,9 @@ class Store {
         const [startValue, endValue] = Object.values(valueObj).map(v=>Number(v))
         const millisecond = (endValue - startValue) / duration
         const distance = endValue > startValue ? endValue - startValue : startValue - endValue
+        const minValDistanceZero = endValue > startValue ? startValue : endValue
         this.store[type]['styleList'][name] = {
-            startValue, endValue, millisecond, unit, distance
+            startValue, endValue, millisecond, unit, distance, minValDistanceZero
         }
     }
     // 处理颜色 -> rgba()
@@ -112,9 +113,22 @@ class Store {
         const [r2, g2, b2, a2] = endValue
         // 进行计算 每毫秒移动的值
         const millisecond = [r2-r1, g2-g1, b2-b1, a2-a1].map(val=>val/duration)
-        const distance = startValue.map((startColor, index)=>{
+        // const distance = startValue.map((startColor, index)=>{
+        //     const endColor = endValue[index]
+        //     return endColor > startColor ? endColor - startColor : startColor - endColor
+        // })
+        const {distance, minValDistanceZero} = startValue.reduce<{distance: number[],minValDistanceZero: number[]}>((prev, startColor, index)=>{
             const endColor = endValue[index]
-            return endColor > startColor ? endColor - startColor : startColor - endColor
+            prev['distance'].push(
+                endColor > startColor ? endColor - startColor : startColor - endColor
+            )
+            prev['minValDistanceZero'].push(
+                endColor > startColor ? startColor : endColor
+            )
+            return prev
+        }, {
+            distance: [],
+            minValDistanceZero: []
         })
         if(startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
             if(!this.store[type]) return;
@@ -123,6 +137,7 @@ class Store {
                 endValue: endValue as storeNamespace.colorValue,
                 millisecond: millisecond as storeNamespace.colorValue,
                 distance: distance as storeNamespace.colorValue,
+                minValDistanceZero: minValDistanceZero as storeNamespace.colorValue,
                 unit
             }
         }
