@@ -21,7 +21,7 @@ class Calculate {
     }
     // 计算base style值
     baseStyleCalulate(store: calculateNamespace.baseStyleStore, runDate:number, direction: boolean, easingFn: EasingFunction){
-        const {startValue, endValue, millisecond} = store
+        const {startValue, endValue, millisecond, distance} = store
         // 获取 每毫秒移动距离
         const calculate = millisecond * runDate
         let styleVal = 0
@@ -32,25 +32,25 @@ class Calculate {
             styleVal = endValue - calculate
         }
         // 解释
-        // 计算出 当前动画值 在 最终值中占多少比率 = 当前动画比率
+        // 计算出 当前动画值 在 距离值中占多少比率 = 当前动画比率
         // 当前动画比率 传入 曲线函数 = 曲线中的占比
-        // 最终值 * 曲线中占比 = 当前应该曲线动画值
-        const easingRatio = easingFn(styleVal / endValue)
-        return easingRatio * endValue
+        // 距离值 * 曲线中占比 = 当前应该曲线动画值
+        const easingRatio = easingFn(styleVal / distance)
+        return easingRatio * distance
     }
     // 计算color值
     colorCalculate(store: calculateNamespace.colorStore, runDate:number, direction: boolean, easingFn: EasingFunction){
-        const {startValue, endValue, millisecond} = store
+        const {startValue, endValue, millisecond, distance} = store
         // 得出当前毫秒运算的rgb值
         const calculateMillisecond = millisecond.map(v=>v*runDate)
         if(direction){
             return startValue.reduce<string>((prev, colorMode, index)=>{
                 const calulateColorMode = calculateMillisecond[index]
-                const endColorMode = endValue[index]
+                const distanceValue = distance[index]
                 const runColorVal = colorMode + calulateColorMode
                 // 计算曲线值
-                const easignRatio = easingFn(runColorVal / endColorMode)
-                prev += endColorMode * easignRatio
+                const easignRatio = easingFn(runColorVal / distanceValue)
+                prev += distanceValue * easignRatio
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';
                 return prev
@@ -58,10 +58,11 @@ class Calculate {
         } else {
             return endValue.reduce<string>((prev, colorMode, index)=>{
                 const calulateColorMode = calculateMillisecond[index]
+                const distanceValue = distance[index]
                 const runColorVal = colorMode - calulateColorMode
                 // 计算曲线值
-                const easignRatio = easingFn(runColorVal / colorMode)
-                prev += colorMode * easignRatio
+                const easignRatio = easingFn(runColorVal / distanceValue)
+                prev += distanceValue * easignRatio
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';
                 return prev

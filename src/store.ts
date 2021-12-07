@@ -13,12 +13,17 @@
  * 0-1000': 
 */
 import easing from './easing'
+import colorString from 'color-string'
 import {switchAnimationInstance, styleNamespace, configNamespace} from '../@types/index'
 import {storeNamespace} from '../@types/store'
 
 // 传递得value对象
 type paramsValueObj = {
     startValue: string, endValue: string
+}
+type colorValueObj = {
+    startValue: number[],
+    endValue: number[]
 }
 
 class Store {
@@ -87,25 +92,37 @@ class Store {
     generateBaseStyle(type: string, name: styleNamespace.styleName, valueObj: paramsValueObj, unit:string, duration: number){
         const [startValue, endValue] = Object.values(valueObj).map(v=>Number(v))
         const millisecond = (endValue - startValue) / duration
+        const distance = endValue > startValue ? endValue - startValue : startValue - endValue
         this.store[type]['styleList'][name] = {
-            startValue, endValue, millisecond, unit
+            startValue, endValue, millisecond, unit, distance
         }
+    }
+    // 处理颜色 -> rgba()
+    handelColorParams(valueObj: paramsValueObj){
+        return Object.keys(valueObj).reduce<colorValueObj>((prev, key)=>{
+            prev[key as keyof colorValueObj] = colorString.get(valueObj[key as keyof typeof valueObj])!.value
+            return prev
+        }, {startValue: [], endValue: []})
     }
     // 生成color每毫秒值
     generateColorStyle(type: string, name: styleNamespace.color, valueObj: paramsValueObj, unit: string, duration: number){
-        // startValue: rgba(0,0,0,1) -> [0,0,0,0]
-        const [startValue, endValue] = Object.values(valueObj).map(val=>val.replace('rgba', '').replace(/[\(|\)]/g, '').split(',').map<number>(v=>Number(v.trim())))
+        const {startValue, endValue} = this.handelColorParams(valueObj)
         // sta: [0,0,0,0] end: [255,255,255,255]
         const [r1, g1, b1, a1] = startValue
         const [r2, g2, b2, a2] = endValue
         // 进行计算 每毫秒移动的值
         const millisecond = [r2-r1, g2-g1, b2-b1, a2-a1].map(val=>val/duration)
+        const distance = startValue.map((startColor, index)=>{
+            const endColor = endValue[index]
+            return endColor > startColor ? endColor - startColor : startColor - endColor
+        })
         if(startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
             if(!this.store[type]) return;
             this.store[type]['styleList'][name] = {
                 startValue: startValue as storeNamespace.colorValue,
                 endValue: endValue as storeNamespace.colorValue,
                 millisecond: millisecond as storeNamespace.colorValue,
+                distance: distance as storeNamespace.colorValue,
                 unit
             }
         }

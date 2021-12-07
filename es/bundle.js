@@ -2,6 +2,7 @@ import _assertThisInitialized from '@babel/runtime/helpers/assertThisInitialized
 import _inheritsLoose from '@babel/runtime/helpers/inheritsLoose';
 import _newArrowCheck from '@babel/runtime/helpers/newArrowCheck';
 import BezierEasing from 'bezier-easing';
+import colorString from 'color-string';
 
 var Easing = function Easing() {
   var _this = this;
@@ -151,32 +152,38 @@ var Store = /*#__PURE__*/function () {
         endValue = _Object$values$map[1];
 
     var millisecond = (endValue - startValue) / duration;
+    var distance = endValue > startValue ? endValue - startValue : startValue - endValue;
     this.store[type]['styleList'][name] = {
       startValue: startValue,
       endValue: endValue,
       millisecond: millisecond,
-      unit: unit
+      unit: unit,
+      distance: distance
     };
+  } // 处理颜色 -> rgba()
+  ;
+
+  _proto.handelColorParams = function handelColorParams(valueObj) {
+    var _this3 = this;
+
+    return Object.keys(valueObj).reduce(function (prev, key) {
+      _newArrowCheck(this, _this3);
+
+      prev[key] = colorString.get(valueObj[key]).value;
+      return prev;
+    }.bind(this), {
+      startValue: [],
+      endValue: []
+    });
   } // 生成color每毫秒值
   ;
 
   _proto.generateColorStyle = function generateColorStyle(type, name, valueObj, unit, duration) {
-    var _this3 = this;
+    var _this4 = this;
 
-    // startValue: rgba(0,0,0,1) -> [0,0,0,0]
-    var _Object$values$map2 = Object.values(valueObj).map(function (val) {
-      var _this4 = this;
-
-      _newArrowCheck(this, _this3);
-
-      return val.replace('rgba', '').replace(/[\(|\)]/g, '').split(',').map(function (v) {
-        _newArrowCheck(this, _this4);
-
-        return Number(v.trim());
-      }.bind(this));
-    }.bind(this)),
-        startValue = _Object$values$map2[0],
-        endValue = _Object$values$map2[1]; // sta: [0,0,0,0] end: [255,255,255,255]
+    var _this$handelColorPara = this.handelColorParams(valueObj),
+        startValue = _this$handelColorPara.startValue,
+        endValue = _this$handelColorPara.endValue; // sta: [0,0,0,0] end: [255,255,255,255]
 
 
     var r1 = startValue[0],
@@ -189,9 +196,15 @@ var Store = /*#__PURE__*/function () {
         a2 = endValue[3]; // 进行计算 每毫秒移动的值
 
     var millisecond = [r2 - r1, g2 - g1, b2 - b1, a2 - a1].map(function (val) {
-      _newArrowCheck(this, _this3);
+      _newArrowCheck(this, _this4);
 
       return val / duration;
+    }.bind(this));
+    var distance = startValue.map(function (startColor, index) {
+      _newArrowCheck(this, _this4);
+
+      var endColor = endValue[index];
+      return endColor > startColor ? endColor - startColor : startColor - endColor;
     }.bind(this));
 
     if (startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
@@ -200,6 +213,7 @@ var Store = /*#__PURE__*/function () {
         startValue: startValue,
         endValue: endValue,
         millisecond: millisecond,
+        distance: distance,
         unit: unit
       };
     }
@@ -231,7 +245,8 @@ var Calculate = /*#__PURE__*/function () {
   _proto.baseStyleCalulate = function baseStyleCalulate(store, runDate, direction, easingFn) {
     var startValue = store.startValue,
         endValue = store.endValue,
-        millisecond = store.millisecond; // 获取 每毫秒移动距离
+        millisecond = store.millisecond,
+        distance = store.distance; // 获取 每毫秒移动距离
 
     var calculate = millisecond * runDate;
     var styleVal = 0;
@@ -242,13 +257,13 @@ var Calculate = /*#__PURE__*/function () {
     } else {
       styleVal = endValue - calculate;
     } // 解释
-    // 计算出 当前动画值 在 最终值中占多少比率 = 当前动画比率
+    // 计算出 当前动画值 在 距离值中占多少比率 = 当前动画比率
     // 当前动画比率 传入 曲线函数 = 曲线中的占比
-    // 最终值 * 曲线中占比 = 当前应该曲线动画值
+    // 距离值 * 曲线中占比 = 当前应该曲线动画值
 
 
-    var easingRatio = easingFn(styleVal / endValue);
-    return easingRatio * endValue;
+    var easingRatio = easingFn(styleVal / distance);
+    return easingRatio * distance;
   } // 计算color值
   ;
 
@@ -257,7 +272,8 @@ var Calculate = /*#__PURE__*/function () {
 
     var startValue = store.startValue,
         endValue = store.endValue,
-        millisecond = store.millisecond; // 得出当前毫秒运算的rgb值
+        millisecond = store.millisecond,
+        distance = store.distance; // 得出当前毫秒运算的rgb值
 
     var calculateMillisecond = millisecond.map(function (v) {
       _newArrowCheck(this, _this);
@@ -270,11 +286,11 @@ var Calculate = /*#__PURE__*/function () {
         _newArrowCheck(this, _this);
 
         var calulateColorMode = calculateMillisecond[index];
-        var endColorMode = endValue[index];
+        var distanceValue = distance[index];
         var runColorVal = colorMode + calulateColorMode; // 计算曲线值
 
-        var easignRatio = easingFn(runColorVal / endColorMode);
-        prev += endColorMode * easignRatio;
+        var easignRatio = easingFn(runColorVal / distanceValue);
+        prev += distanceValue * easignRatio;
         if (index !== 3) prev += ',';
         if (index === 3) prev += ')';
         return prev;
@@ -284,10 +300,11 @@ var Calculate = /*#__PURE__*/function () {
         _newArrowCheck(this, _this);
 
         var calulateColorMode = calculateMillisecond[index];
+        var distanceValue = distance[index];
         var runColorVal = colorMode - calulateColorMode; // 计算曲线值
 
-        var easignRatio = easingFn(runColorVal / colorMode);
-        prev += colorMode * easignRatio;
+        var easignRatio = easingFn(runColorVal / distanceValue);
+        prev += distanceValue * easignRatio;
         if (index !== 3) prev += ',';
         if (index === 3) prev += ')';
         return prev;

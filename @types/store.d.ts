@@ -3,7 +3,8 @@ import {EasingFunction} from 'bezier-easing'
 
 export namespace storeNamespace {
     // style级别的 key
-    export type styleStoreKey = 'startValue' | 'endValue' | 'millisecond'
+    // 开始、结束、每秒运行、距离
+    export type styleStoreKey = 'startValue' | 'endValue' | 'millisecond' | 'distance'
     // 颜色存储value
     export type colorValue = [number, number, number, number]
     // styleValue

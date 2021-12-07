@@ -21,7 +21,8 @@ async function compile(){
         input: '../src/index.ts',
         external: [
             'bezier-easing',
-            /@babel\/runtime/
+            /@babel\/runtime/,
+            'color-string'
         ],
         plugins: [
             rollupTypescript(),
