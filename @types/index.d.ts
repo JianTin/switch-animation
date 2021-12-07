@@ -5,6 +5,7 @@ import {bulitInEasing} from './easing'
 // 支持得css参数
 export namespace styleNamespace {
     type margin = 'margin' | 'margin-top' | 'margin-bottom' | 'margin-left' | 'margin-right'
+    type border = 'border-width' | 'border-color'
     type padding = 'padding' | 'padding-top' | 'padding-bottom' | 'padding-left' | 'padding-right'
     type size = 'width' | 'height'
     type inset = 'left' | 'right' | 'top' | 'bottom'
@@ -14,7 +15,7 @@ export namespace styleNamespace {
     type scale = 'scaleX' | 'scaleY' | 'scaleZ'
     type skew = 'skewX' | 'skewY'
     export type transform = rotate | translate | scale | skew | 'perspective'
-    export type styleName = margin | padding | size | inset | color | transform  | 'font-size' | 'opacity'
+    export type styleName = margin | padding | size | inset | color | transform  | border |'font-size' | 'opacity'
 }
 
 // config配置

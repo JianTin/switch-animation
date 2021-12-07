@@ -31,12 +31,12 @@ class Store {
     store: {
         [type: string]: storeNamespace.typeStore
     }
-    colorNameArray: Array<styleNamespace.color>
+    colorNameArray: Array<styleNamespace.color | 'border-color'>
     constructor(){
         // 全局的
         this.globalStore = null
         this.store = {}
-        this.colorNameArray = ['color', 'background-color']
+        this.colorNameArray = ['color', 'background-color', 'border-color']
     }
     createType = (type: string)=>{
         if(!this.store[type]) {

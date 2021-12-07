@@ -27,13 +27,23 @@ export default function(){
                     easing: "easeInOutBack",
                     "background-color": {
                         startValue: "red",
-                        endValue: "rgba(111,191,111,1)",
+                        endValue: "rgba(255,191,111,1)",
                         unit: ""
                     },
                     translateX: {
-                        startValue: '-100',
-                        endValue: '-50',
+                        startValue: '0',
+                        endValue: '50',
                         unit: 'px'
+                    },
+                    "border-width": {
+                        startValue: '1',
+                        endValue: '2',
+                        unit: 'px'
+                    },
+                    "border-color": {
+                        startValue: 'green',
+                        endValue: 'blue',
+                        unit: ''
                     }
                 }
                 // '0-1000': {
@@ -59,7 +69,7 @@ export default function(){
             width:'100px',
             height:'100px',
             background:'red',
-            transform: 'translateX(-100px)'
+            border: 'solid 1px green'
         }}>1231232</div>
     </> 
 }
