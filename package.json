@@ -1,7 +1,7 @@
 {
   "name": "switch-animation",
-  "version": "1.0.9",
-  "description": "支持复杂的切换动画，保证中间不会产生断层",
+  "version": "1.1.0",
+  "description": "Support complex switching animation to ensure that there will be no failure in the middle",
   "main": "lib/bundle.js",
   "module": "es/bundle.js",
   "types": "@types/index.d.ts",
@@ -21,6 +21,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/JianTin/switch-animation"
+  },
+  "publishConfig": {
+    "registry": "https://github.com/JianTin/switch-animation"
   },
   "license": "ISC",
   "dependencies": {
