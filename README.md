@@ -29,7 +29,7 @@ import SwitchAnimation from 'switch-animation'
 const {switchAnimation} = new SwitchAnimation({
     element: document.querySelector('div'),
     duration: 500,
-    easing: 'easeInOutBack', // 可不传，默认 linear 曲线。只应用于 整段动画
+    easing: 'easeInOutBack', // 可不传，默认 linear 曲线。
     targetStyle: {
         translateX: {
             startValue: '0',
@@ -56,9 +56,10 @@ js:
 const {switchAnimation} = new SwitchAnimation({
     element: document.querySelector('div'),
     duration: 800,
+    easing: 'linear', // 默认linear，可不传递。将应用于每个时间段 动画曲线
     middleStyle: {
         '0-800': {
-            easing: 'easeOutBack', // 默认 linear，可不传递。每个时间段可以单独设置
+            easing: 'easeOutBack', // 每个时间段可以单独设置，做到覆盖全局 动画曲线
             translateX: {
                 startValue: '0',
                 endValue: '500',
@@ -90,8 +91,9 @@ switchAnimation()
 ...
 ```
 
-#### css支持情况
+#### cssName支持情况
 不支持：  
+transform：我这边拆分为 单个变换，如 translateX、translateY、rotate、scaleX...
 translate: 可以通过 translateX + translateY 代替  
 scale: 可以通过 scaleX + scaleY 代替  
 border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  
@@ -110,4 +112,61 @@ box-shadow: 目前不支持
 'perspective' | 'font-size' | 'opacity'  
 
 #### 基本参数
+```
+new SwitchAnimation({
+    element: 必传，dom元素 --- element
+    duration：必传，动画时间 --- number
+    easing：非必传，默认 linear，作用于全局动画的曲线 --- [number, number, number, number] | string（详情下方 动画曲线）
+    onStart: 非必传，默认 null，动画开始运行时 触发 --- (element)=>void
+    onAnimation: 非必传, 默认null，动画进行更改element.style时 (不建议使用，会频繁调用) 触发 --- (element)=>void
+    onEnd: 非必传，默认null，动画结束时 触发 --- (element)=>void
+    // 下边是模式：二选一
+    targetStyle: { // 整段动画
+        cssName: { // 必传，设置的cssName （例： left | translateX | 'background-color' ）
+            startValue: 必传, 开始cssValue值 --- string
+            endValue: 必传，结束cssValue值 --- string
+            unit: 必传，单位 --- string （例：'px' | '%' | 'deg' | '' ）
+        }
+        cssName...
+    }
+    middleStyle: { // 分段动画
+        'startDuration-endDuration': { // 必传开始运行 和 结束运行的时间。例: ( '0-1000' | '300-700' )
+            easing: 非必传，默认以 全局动画曲线为主。可单独设置分段动画曲线
+            onStart: 非必传，开始运行分段动画触发。
+            onAnimation：...
+            onEnd:...
+            cssName: {
+                startValue,endValue,unit
+            },
+            cssName...
+        }
+        'startDuration-endDuration'...
+    }
+})
+```
+#### 特殊cssName 设置
+颜色 --- color、'background-color'、'border-color'
+```
+    startVal、endValue: rgb(x,x,x)、rgba(x,x,x,x)、##373D49、hsl(360, 100%, 50%)、hwb(60, 3%, 60%)、red(color-name)...
+    例：
+        color: {
+            startValue: 'green',
+            endValue: 'rgba()',
+            unit: ''
+        }
+```
+
+#### 动画曲线
+easing: [number, number, number, number] | string (代表内置的动画曲线)
+> (内置动画曲线 效果查看  ---  [https://easings.net/cn](https://easings.net/cn) )
+> string 支持参数
+> 'linear' | 'easeInSine' | 'easeOutSine' | 'easeInOutSine' | 'easeInQuad' | 'easeOutQuad' | 'easeInOutQuad' | 
+>    'easeInCubic' | 'easeOutCubic'  | 'easeInOutCubic' | 'easeInQuart' | 'easeOutQuart' | 'easeInOutQuart' | 
+>    'easeInQuint' | 'easeOutQuint' | 'easeInOutQuint' | 'easeInExpo' | 'easeOutExpo' | 'easeInOutExpo'| 
+>    'easeInCirc' | 'easeOutCirc' | 'easeInOutCirc' | 'easeInBack' | 'easeOutBack' | 'easeInOutBack'
+
+> 自定义动画曲线
+> easing: [.42, -0.54, .42, .99]
+> (可以通过该网站预设效果 --- [https://cubic-bezier.com/](https://cubic-bezier.com/) ) 
+
 

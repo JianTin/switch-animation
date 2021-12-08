@@ -15,6 +15,7 @@ export default function(){
         event.current = new SwitchAnimation({
             element: elementRef.current as HTMLDivElement,
             duration: 1000,
+            easing: "easeInOutBack",
             middleStyle: {
                 // '0-500': {
                 //     'background-color': {
@@ -23,13 +24,14 @@ export default function(){
                 //         unit: ''
                 //     }
                 // },
-                '0-1000': {
-                    easing: "easeInOutBack",
+                '200-800': {
                     "background-color": {
                         startValue: "red",
                         endValue: "rgba(255,191,111,1)",
                         unit: ""
-                    },
+                    }
+                },
+                '0-1000': {
                     translateX: {
                         startValue: '0',
                         endValue: '50',

@@ -66,6 +66,23 @@ export type getInstanceEventValue = {
 }
 // switchAnimation实例
 export interface switchAnimationInstance {
+    // duration: number
+    // currentDate: number
+    // startDate: number
+    // endDate: number
+    // element: HTMLElementTagNameMap[T]
+    // targetStyle: configNamespace.targetStyle | null
+    // AnimationCallback: configNamespace.AnimationCallback
+    // // 正向 还是 反向
+    // isPositive: boolean
+    // // 是否第一次
+    // isInit: boolean
+    // // true 显示/显示中，false 隐藏和隐藏中
+    // animationShow: boolean
+    // // 实例分级
+    // durationType: string
+    // 曲线
+    easing: configNamespace.easingVal
     getInstanceEvent:()=>(getInstanceEventValue)
 }
 

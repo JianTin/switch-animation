@@ -19,6 +19,8 @@ class Public <T extends configNamespace.elementKey>{
     animationShow: boolean
     // 实例分级
     durationType: string
+    // 曲线
+    easing: configNamespace.easingVal
     constructor(elementConfig: configNamespace.animationConfig<T>){
         const {
             element,
@@ -27,7 +29,8 @@ class Public <T extends configNamespace.elementKey>{
             onAnimation,
             onEnd,
             duration,
-            durationType = 'all'
+            durationType = 'all',
+            easing = 'linear'
         } = elementConfig
         // 保存动画 运行中的时间
         this.currentDate = 0
@@ -47,11 +50,12 @@ class Public <T extends configNamespace.elementKey>{
         this.isInit = true
         this.isPositive = true
         this.animationShow = false
+        this.easing = easing
         this.initEvent(elementConfig)
     }
     // 初始化，保存当前 type实例，每个styleName 每毫秒计算值
     initEvent = (elementConfig: configNamespace.animationConfig<T>) => {
-        const {targetStyle, duration, durationType} = this
+        const {targetStyle, duration, durationType, easing} = this
         // 初始化保存 globalInstance
         if(durationType === 'all'){
             storeInstance.initGlobalStore(this as any)
@@ -71,7 +75,7 @@ class Public <T extends configNamespace.elementKey>{
         // 存储 instance，继承实例 具有全部方法
         storeInstance.addStoreInstance(durationType, this as any)
         // 添加贝塞尔曲线
-        storeInstance.addStoreEasing(durationType, elementConfig.easing ? elementConfig.easing : 'linear')
+        storeInstance.addStoreEasing(durationType, easing)
     }
     // 动画结束 触发
     endInit = () => {

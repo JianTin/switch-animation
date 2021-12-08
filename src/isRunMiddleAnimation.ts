@@ -23,7 +23,7 @@ class IsRunMiddleAnimation {
                 element,
                 targetStyle: styleObj,
                 durationType,
-                easing: easing ? easing : 'linear',
+                easing: easing ? easing : storeInstance.globalStore?.easing,
                 onStart, onEnd, onAnimation
             })
             // 存储该type级别，正方向应该 运行的时间

@@ -453,6 +453,8 @@ var IsRunMiddleAnimation = /*#__PURE__*/function () {
 
       _newArrowCheck(this, _this2);
 
+      var _a;
+
       var _durationType$split$m = durationType.split('-').map(function (n) {
         _newArrowCheck(this, _this3);
 
@@ -476,7 +478,7 @@ var IsRunMiddleAnimation = /*#__PURE__*/function () {
         element: element,
         targetStyle: styleObj,
         durationType: durationType,
-        easing: easing ? easing : 'linear',
+        easing: easing ? easing : (_a = storeInstance.globalStore) === null || _a === void 0 ? void 0 : _a.easing,
         onStart: onStart,
         onEnd: onEnd,
         onAnimation: onAnimation
@@ -502,7 +504,8 @@ var Public = function Public(elementConfig) {
 
     var targetStyle = this.targetStyle,
         duration = this.duration,
-        durationType = this.durationType; // 初始化保存 globalInstance
+        durationType = this.durationType,
+        easing = this.easing; // 初始化保存 globalInstance
 
     if (durationType === 'all') {
       storeInstance.initGlobalStore(this);
@@ -531,7 +534,7 @@ var Public = function Public(elementConfig) {
 
     storeInstance.addStoreInstance(durationType, this); // 添加贝塞尔曲线
 
-    storeInstance.addStoreEasing(durationType, elementConfig.easing ? elementConfig.easing : 'linear');
+    storeInstance.addStoreEasing(durationType, easing);
   }.bind(this); // 动画结束 触发
 
 
@@ -576,7 +579,9 @@ var Public = function Public(elementConfig) {
       onEnd = elementConfig.onEnd,
       duration = elementConfig.duration,
       _elementConfig$durati = elementConfig.durationType,
-      durationType = _elementConfig$durati === void 0 ? 'all' : _elementConfig$durati; // 保存动画 运行中的时间
+      durationType = _elementConfig$durati === void 0 ? 'all' : _elementConfig$durati,
+      _elementConfig$easing = elementConfig.easing,
+      easing = _elementConfig$easing === void 0 ? 'linear' : _elementConfig$easing; // 保存动画 运行中的时间
 
   this.currentDate = 0; // 动画开始时间
 
@@ -599,6 +604,7 @@ var Public = function Public(elementConfig) {
   this.isInit = true;
   this.isPositive = true;
   this.animationShow = false;
+  this.easing = easing;
   this.initEvent(elementConfig);
 }; // 整体时间计算，调用执行动画
 
