@@ -15,7 +15,7 @@ export default function(){
         event.current = new SwitchAnimation({
             element: elementRef.current as HTMLDivElement,
             duration: 1000,
-            easing: "easeInOutBack",
+            // easing: "easeInOutBack",
             middleStyle: {
                 // '0-500': {
                 //     'background-color': {

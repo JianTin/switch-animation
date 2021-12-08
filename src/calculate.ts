@@ -51,7 +51,6 @@ class Calculate {
                 const distanceValue = distance[index]
                 const minVal = minValDistanceZero[index]
                 const runColorVal = colorMode + calulateColorMode
-                console.log(runColorVal, colorMode, calulateColorMode)
                 if(distanceValue === 0){
                     prev += runColorVal
                 } else {
@@ -61,7 +60,6 @@ class Calculate {
                 }
                 if(index !== 3) prev+=',';
                 if(index === 3) prev+=')';
-                console.log(prev)
                 return prev
             }, 'rgba(')
         } else {

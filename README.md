@@ -1,11 +1,12 @@
-未完成
 # switch-animation
 ___
 封装的一个动画类。用于做动画 切换，保证中间切换 按照原动画逻辑进行过度。  
 支持typescript。  
 支持动画曲线（贝塞尔曲线）目前已内置了部分。  
 分为两种模式：整段动画、阶段动画  
-> 例子：  
+插件例子：[整段动画](https://codesandbox.io/s/jian-dan-dong-hua-bdusy?file=/src/App.tsx)   [分段动画](https://codesandbox.io/s/fu-za-dong-hua-li-zi-3cuzm?file=/src/App.tsx)   [整段动画实践](https://codesandbox.io/s/jian-dan-li-zi---zu-jian-cdykh)  
+
+> css问题：  
 > 0-1000ms（left: 0-1000px ) 100-200ms (background-color: red->green )  
 > 当你走到 200ms，需要让他恢复到初始状态。此时单靠 css 是无法实现的。  
 > transtion: 无法保证 100-200ms 做background切换，保持left同步运行。  
@@ -96,7 +97,7 @@ switchAnimation()
 transform：我这边拆分为 单个变换，如 translateX、translateY、rotate、scaleX...
 translate: 可以通过 translateX + translateY 代替  
 scale: 可以通过 scaleX + scaleY 代替  
-border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  
+border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  [border 例子](https://codesandbox.io/s/border-li-zi-jf2tl)
 box-shadow: 目前不支持  
 支持：  
 'margin' | 'margin-top' | 'margin-bottom' | 'margin-left' | 'margin-right'  
@@ -113,7 +114,7 @@ box-shadow: 目前不支持
 
 #### 基本参数
 ```
-new SwitchAnimation({
+const animationInstance = new SwitchAnimation({
     element: 必传，dom元素 --- element
     duration：必传，动画时间 --- number
     easing：非必传，默认 linear，作用于全局动画的曲线 --- [number, number, number, number] | string（详情下方 动画曲线）
@@ -143,6 +144,15 @@ new SwitchAnimation({
         'startDuration-endDuration'...
     }
 })
+// 返回值实例
+animationInstance {
+    getInstanceEvent:()=>({ // 通过调用实例的getInstanceEvent 获取封装的方法。
+        isAnimationShow:()=>boolean // isAnimationShow方法，调用后返回 boolean。true: 动画在显示中 / 已经显示 false反之
+        startAnimation: ()=>void // startAnimation方法，需要动画重新开始使用（大概率少用）
+        switchAnimation: ()=>void // switchAnimation方法，通过他调用动画 切换（开始 -> 结束、结束 -> 开始、中间切换）
+    })
+}
+
 ```
 #### 特殊cssName 设置
 颜色 --- color、'background-color'、'border-color'
@@ -157,16 +167,16 @@ new SwitchAnimation({
 ```
 
 #### 动画曲线
-easing: [number, number, number, number] | string (代表内置的动画曲线)
-> (内置动画曲线 效果查看  ---  [https://easings.net/cn](https://easings.net/cn) )
-> string 支持参数
-> 'linear' | 'easeInSine' | 'easeOutSine' | 'easeInOutSine' | 'easeInQuad' | 'easeOutQuad' | 'easeInOutQuad' | 
->    'easeInCubic' | 'easeOutCubic'  | 'easeInOutCubic' | 'easeInQuart' | 'easeOutQuart' | 'easeInOutQuart' | 
->    'easeInQuint' | 'easeOutQuint' | 'easeInOutQuint' | 'easeInExpo' | 'easeOutExpo' | 'easeInOutExpo'| 
->    'easeInCirc' | 'easeOutCirc' | 'easeInOutCirc' | 'easeInBack' | 'easeOutBack' | 'easeInOutBack'
+easing: [number, number, number, number] | string (代表内置的动画曲线)   
+> (内置动画曲线 效果查看  ---  [https://easings.net/cn](https://easings.net/cn) )  
+> string 支持参数  
+> 'linear' | 'easeInSine' | 'easeOutSine' | 'easeInOutSine' | 'easeInQuad' | 'easeOutQuad' | 'easeInOutQuad' |   
+>    'easeInCubic' | 'easeOutCubic'  | 'easeInOutCubic' | 'easeInQuart' | 'easeOutQuart' | 'easeInOutQuart' |   
+>    'easeInQuint' | 'easeOutQuint' | 'easeInOutQuint' | 'easeInExpo' | 'easeOutExpo' | 'easeInOutExpo'|   
+>    'easeInCirc' | 'easeOutCirc' | 'easeInOutCirc' | 'easeInBack' | 'easeOutBack' | 'easeInOutBack'  
 
-> 自定义动画曲线
-> easing: [.42, -0.54, .42, .99]
-> (可以通过该网站预设效果 --- [https://cubic-bezier.com/](https://cubic-bezier.com/) ) 
+> 自定义动画曲线  
+> easing: [.42, -0.54, .42, .99]  
+> (可以通过该网站预设效果 --- [https://cubic-bezier.com/](https://cubic-bezier.com/) )   
 
 

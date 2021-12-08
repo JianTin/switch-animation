@@ -307,7 +307,6 @@ var Calculate = /*#__PURE__*/function () {
         var distanceValue = distance[index];
         var minVal = minValDistanceZero[index];
         var runColorVal = colorMode + calulateColorMode;
-        console.log(runColorVal, colorMode, calulateColorMode);
 
         if (distanceValue === 0) {
           prev += runColorVal;
@@ -319,7 +318,6 @@ var Calculate = /*#__PURE__*/function () {
 
         if (index !== 3) prev += ',';
         if (index === 3) prev += ')';
-        console.log(prev);
         return prev;
       }.bind(this), 'rgba(');
     } else {
