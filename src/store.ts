@@ -25,6 +25,11 @@ type colorValueObj = {
     startValue: number[],
     endValue: number[]
 }
+// 处理的数组
+type handelArrayParamsObj = {
+    startValue: number[],
+    endValue: number[]
+}
 
 class Store {
     globalStore: switchAnimationInstance | null
@@ -55,7 +60,9 @@ class Store {
     // 添加storeStyle
     addStoreStyle = (type: string, name: styleNamespace.styleName, valueObj: paramsValueObj, unit: string, duration: number) => {
        this.createType(type)
-       if(this.colorNameArray.includes(name as styleNamespace.color)) {// 判断是color么，是的话处理为需要的格式
+       if(name === 'box-shadow'){
+        this.generateBoxShadow(type, name, valueObj, unit, duration)
+       } else if(this.colorNameArray.includes(name as styleNamespace.color)) {// 判断是color么，是的话处理为需要的格式
            this.generateColorStyle(type, name as styleNamespace.color, valueObj, unit, duration)
        } else {
            this.generateBaseStyle(type, name, valueObj, unit, duration)
@@ -98,26 +105,10 @@ class Store {
             startValue, endValue, millisecond, unit, distance, minValDistanceZero
         }
     }
-    // 处理颜色 -> rgba()
-    handelColorParams(valueObj: paramsValueObj){
-        return Object.keys(valueObj).reduce<colorValueObj>((prev, key)=>{
-            prev[key as keyof colorValueObj] = colorString.get(valueObj[key as keyof typeof valueObj])!.value
-            return prev
-        }, {startValue: [], endValue: []})
-    }
-    // 生成color每毫秒值
-    generateColorStyle(type: string, name: styleNamespace.color, valueObj: paramsValueObj, unit: string, duration: number){
-        const {startValue, endValue} = this.handelColorParams(valueObj)
-        // sta: [0,0,0,0] end: [255,255,255,255]
-        const [r1, g1, b1, a1] = startValue
-        const [r2, g2, b2, a2] = endValue
-        // 进行计算 每毫秒移动的值
-        const millisecond = [r2-r1, g2-g1, b2-b1, a2-a1].map(val=>val/duration)
-        // const distance = startValue.map((startColor, index)=>{
-        //     const endColor = endValue[index]
-        //     return endColor > startColor ? endColor - startColor : startColor - endColor
-        // })
-        const {distance, minValDistanceZero} = startValue.reduce<{distance: number[],minValDistanceZero: number[]}>((prev, startColor, index)=>{
+    // 处理数组 -> styleStore,复用
+    handelArrayToStyleStore(valueObj: handelArrayParamsObj, duration: number){
+        const {startValue, endValue} = valueObj
+        const {millisecond, distance, minValDistanceZero} = startValue.reduce<{distance: number[],minValDistanceZero: number[],millisecond: number[]}>((prev, startColor, index)=>{
             const endColor = endValue[index]
             prev['distance'].push(
                 endColor > startColor ? endColor - startColor : startColor - endColor
@@ -125,11 +116,47 @@ class Store {
             prev['minValDistanceZero'].push(
                 endColor > startColor ? startColor : endColor
             )
+            prev['millisecond'].push(
+                (endColor - startColor)/duration
+            )
             return prev
         }, {
+            millisecond: [],
             distance: [],
             minValDistanceZero: []
         })
+        return {startValue, endValue, distance, millisecond, minValDistanceZero}
+    }
+    // 处理颜色 -> rgba()
+    handelColorParams(valueObj: paramsValueObj){
+        console.log(valueObj)
+        return Object.keys(valueObj).reduce<colorValueObj>((prev, key)=>{
+            prev[key as keyof colorValueObj] = colorString.get(valueObj[key as keyof typeof valueObj])!.value
+            return prev
+        }, {startValue: [], endValue: []})
+    }
+    // 生成color每毫秒值
+    generateColorStyle(type: string, name: styleNamespace.color, valueObj: paramsValueObj, unit: string, duration: number){
+        // const {startValue, endValue} = 
+        // sta: [0,0,0,0] end: [255,255,255,255]
+        // const [r1, g1, b1, a1] = startValue
+        // const [r2, g2, b2, a2] = endValue
+        // // 进行计算 每毫秒移动的值
+        // const millisecond = [r2-r1, g2-g1, b2-b1, a2-a1].map(val=>val/duration)
+        // const {distance, minValDistanceZero} = startValue.reduce<{distance: number[],minValDistanceZero: number[]}>((prev, startColor, index)=>{
+        //     const endColor = endValue[index]
+        //     prev['distance'].push(
+        //         endColor > startColor ? endColor - startColor : startColor - endColor
+        //     )
+        //     prev['minValDistanceZero'].push(
+        //         endColor > startColor ? startColor : endColor
+        //     )
+        //     return prev
+        // }, {
+        //     distance: [],
+        //     minValDistanceZero: []
+        // })
+        const {startValue, endValue, millisecond, distance, minValDistanceZero} = this.handelArrayToStyleStore(this.handelColorParams(valueObj), duration)
         if(startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
             if(!this.store[type]) return;
             this.store[type]['styleList'][name] = {
@@ -140,7 +167,49 @@ class Store {
                 minValDistanceZero: minValDistanceZero as storeNamespace.colorValue,
                 unit
             }
+            console.log(this.store)
         }
+    }
+    // 生成 box-shadow
+    generateBoxShadow(type: string, name: styleNamespace.shadow, valueObj: paramsValueObj, unit: string, duration: number){
+        const {startValue, endValue} = valueObj
+        const cleanUnitRegExp = new RegExp(unit, 'g')
+        //inset 2px 2px 2px 1px red, inset 2px 2px 2px 1px red
+        const multipleStartShadow = startValue.replace(cleanUnitRegExp, '').split((/,(?![^\(]*\))/))
+        const multipleEndShadow = endValue.replace(cleanUnitRegExp, '').split((/,(?![^\(]*\))/))
+        // ['inset 2px 2px 2px 1px red', 'inset 2px 2px 2px 1px red']
+        const {color, inset, shadowNumber} = multipleStartShadow.reduce<{
+            color: Array<handelArrayParamsObj>,
+            inset: number[],
+            shadowNumber: Array<handelArrayParamsObj>
+        }>((prev, startShadow, index)=>{
+            /**
+             * startValue: 'inset 2px 2px 2px 1px red' -> 
+             * color: {startValue: red->[r,g,b,a], endVlaue:...}
+             * inset: [0],
+             * shadowNumber: {startValue: [2,2,2,1]}
+            */
+            const startShadowArray = startShadow.split(/ (?![^\(]*\))/).filter(Boolean)
+            const endShadowArray = multipleEndShadow[index].split(/ (?![^\(]*\))/).filter(Boolean)
+            if(startShadowArray)
+            // 查找是否有 inset，如果有的话 delete掉。并未 inset 添加标识
+            if(startShadowArray.length === 6) {
+                prev['inset'].push(index)
+                startShadowArray.shift()
+                endShadowArray.shift()
+            }
+            const startColor = startShadowArray.pop()
+            const endColor = endShadowArray.pop()
+            prev['color'].push(this.handelColorParams({startValue: startColor as string, endValue: endColor as string}))
+            prev['shadowNumber'].push({
+                startValue: startShadowArray.map(Number), endValue: endShadowArray.map(Number)
+            })
+            return prev
+        },{
+            color: [],inset: [],shadowNumber: []
+        })
+        console.log(color, inset, shadowNumber)
+        // color ,inset ,shadowNumber
     }
 }
 

@@ -14,8 +14,9 @@ export namespace styleNamespace {
     type translate = 'translateX' | 'translateY' | 'translateZ'
     type scale = 'scaleX' | 'scaleY' | 'scaleZ'
     type skew = 'skewX' | 'skewY'
+    export type shadow = 'box-shadow'
     export type transform = rotate | translate | scale | skew | 'perspective'
-    export type styleName = margin | padding | size | inset | color | transform  | border |'font-size' | 'opacity'
+    export type styleName = margin | padding | size | inset | color | transform  | border |'font-size' | 'opacity' | shadow
 }
 
 // config配置

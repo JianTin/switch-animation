@@ -84,7 +84,9 @@ var Store = /*#__PURE__*/function () {
 
       this.createType(type);
 
-      if (this.colorNameArray.includes(name)) {
+      if (name === 'box-shadow') {
+        this.generateBoxShadow(type, name, valueObj, unit, duration);
+      } else if (this.colorNameArray.includes(name)) {
         // 判断是color么，是的话处理为需要的格式
         this.generateColorStyle(type, name, valueObj, unit, duration);
       } else {
@@ -162,14 +164,48 @@ var Store = /*#__PURE__*/function () {
       distance: distance,
       minValDistanceZero: minValDistanceZero
     };
+  } // 处理数组 -> styleStore,复用
+  ;
+
+  _proto.handelArrayToStyleStore = function handelArrayToStyleStore(valueObj, duration) {
+    var _this3 = this;
+
+    var startValue = valueObj.startValue,
+        endValue = valueObj.endValue;
+
+    var _startValue$reduce = startValue.reduce(function (prev, startColor, index) {
+      _newArrowCheck(this, _this3);
+
+      var endColor = endValue[index];
+      prev['distance'].push(endColor > startColor ? endColor - startColor : startColor - endColor);
+      prev['minValDistanceZero'].push(endColor > startColor ? startColor : endColor);
+      prev['millisecond'].push((endColor - startColor) / duration);
+      return prev;
+    }.bind(this), {
+      millisecond: [],
+      distance: [],
+      minValDistanceZero: []
+    }),
+        millisecond = _startValue$reduce.millisecond,
+        distance = _startValue$reduce.distance,
+        minValDistanceZero = _startValue$reduce.minValDistanceZero;
+
+    return {
+      startValue: startValue,
+      endValue: endValue,
+      distance: distance,
+      millisecond: millisecond,
+      minValDistanceZero: minValDistanceZero
+    };
   } // 处理颜色 -> rgba()
   ;
 
   _proto.handelColorParams = function handelColorParams(valueObj) {
-    var _this3 = this;
+    var _this4 = this;
 
+    console.log(valueObj);
     return Object.keys(valueObj).reduce(function (prev, key) {
-      _newArrowCheck(this, _this3);
+      _newArrowCheck(this, _this4);
 
       prev[key] = colorString.get(valueObj[key]).value;
       return prev;
@@ -181,44 +217,31 @@ var Store = /*#__PURE__*/function () {
   ;
 
   _proto.generateColorStyle = function generateColorStyle(type, name, valueObj, unit, duration) {
-    var _this4 = this;
-
-    var _this$handelColorPara = this.handelColorParams(valueObj),
-        startValue = _this$handelColorPara.startValue,
-        endValue = _this$handelColorPara.endValue; // sta: [0,0,0,0] end: [255,255,255,255]
-
-
-    var r1 = startValue[0],
-        g1 = startValue[1],
-        b1 = startValue[2],
-        a1 = startValue[3];
-    var r2 = endValue[0],
-        g2 = endValue[1],
-        b2 = endValue[2],
-        a2 = endValue[3]; // 进行计算 每毫秒移动的值
-
-    var millisecond = [r2 - r1, g2 - g1, b2 - b1, a2 - a1].map(function (val) {
-      _newArrowCheck(this, _this4);
-
-      return val / duration;
-    }.bind(this)); // const distance = startValue.map((startColor, index)=>{
+    // const {startValue, endValue} = 
+    // sta: [0,0,0,0] end: [255,255,255,255]
+    // const [r1, g1, b1, a1] = startValue
+    // const [r2, g2, b2, a2] = endValue
+    // // 进行计算 每毫秒移动的值
+    // const millisecond = [r2-r1, g2-g1, b2-b1, a2-a1].map(val=>val/duration)
+    // const {distance, minValDistanceZero} = startValue.reduce<{distance: number[],minValDistanceZero: number[]}>((prev, startColor, index)=>{
     //     const endColor = endValue[index]
-    //     return endColor > startColor ? endColor - startColor : startColor - endColor
+    //     prev['distance'].push(
+    //         endColor > startColor ? endColor - startColor : startColor - endColor
+    //     )
+    //     prev['minValDistanceZero'].push(
+    //         endColor > startColor ? startColor : endColor
+    //     )
+    //     return prev
+    // }, {
+    //     distance: [],
+    //     minValDistanceZero: []
     // })
-
-    var _startValue$reduce = startValue.reduce(function (prev, startColor, index) {
-      _newArrowCheck(this, _this4);
-
-      var endColor = endValue[index];
-      prev['distance'].push(endColor > startColor ? endColor - startColor : startColor - endColor);
-      prev['minValDistanceZero'].push(endColor > startColor ? startColor : endColor);
-      return prev;
-    }.bind(this), {
-      distance: [],
-      minValDistanceZero: []
-    }),
-        distance = _startValue$reduce.distance,
-        minValDistanceZero = _startValue$reduce.minValDistanceZero;
+    var _this$handelArrayToSt = this.handelArrayToStyleStore(this.handelColorParams(valueObj), duration),
+        startValue = _this$handelArrayToSt.startValue,
+        endValue = _this$handelArrayToSt.endValue,
+        millisecond = _this$handelArrayToSt.millisecond,
+        distance = _this$handelArrayToSt.distance,
+        minValDistanceZero = _this$handelArrayToSt.minValDistanceZero;
 
     if (startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
       if (!this.store[type]) return;
@@ -230,7 +253,59 @@ var Store = /*#__PURE__*/function () {
         minValDistanceZero: minValDistanceZero,
         unit: unit
       };
+      console.log(this.store);
     }
+  } // 生成 box-shadow
+  ;
+
+  _proto.generateBoxShadow = function generateBoxShadow(type, name, valueObj, unit, duration) {
+    var _this5 = this;
+
+    var startValue = valueObj.startValue,
+        endValue = valueObj.endValue;
+    var cleanUnitRegExp = new RegExp(unit, 'g'); //inset 2px 2px 2px 1px red, inset 2px 2px 2px 1px red
+
+    var multipleStartShadow = startValue.replace(cleanUnitRegExp, '').split(/,(?![^\(]*\))/);
+    var multipleEndShadow = endValue.replace(cleanUnitRegExp, '').split(/,(?![^\(]*\))/); // ['inset 2px 2px 2px 1px red', 'inset 2px 2px 2px 1px red']
+
+    var _multipleStartShadow$ = multipleStartShadow.reduce(function (prev, startShadow, index) {
+      _newArrowCheck(this, _this5);
+
+      /**
+       * startValue: 'inset 2px 2px 2px 1px red' ->
+       * color: {startValue: red->[r,g,b,a], endVlaue:...}
+       * inset: [0],
+       * shadowNumber: {startValue: [2,2,2,1]}
+      */
+      var startShadowArray = startShadow.split(/ (?![^\(]*\))/).filter(Boolean);
+      var endShadowArray = multipleEndShadow[index].split(/ (?![^\(]*\))/).filter(Boolean);
+      if (startShadowArray) // 查找是否有 inset，如果有的话 delete掉。并未 inset 添加标识
+        if (startShadowArray.length === 6) {
+          prev['inset'].push(index);
+          startShadowArray.shift();
+          endShadowArray.shift();
+        }
+      var startColor = startShadowArray.pop();
+      var endColor = endShadowArray.pop();
+      prev['color'].push(this.handelColorParams({
+        startValue: startColor,
+        endValue: endColor
+      }));
+      prev['shadowNumber'].push({
+        startValue: startShadowArray.map(Number),
+        endValue: endShadowArray.map(Number)
+      });
+      return prev;
+    }.bind(this), {
+      color: [],
+      inset: [],
+      shadowNumber: []
+    }),
+        color = _multipleStartShadow$.color,
+        inset = _multipleStartShadow$.inset,
+        shadowNumber = _multipleStartShadow$.shadowNumber;
+
+    console.log(color, inset, shadowNumber); // color ,inset ,shadowNumber
   };
 
   return Store;
