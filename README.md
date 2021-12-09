@@ -4,7 +4,7 @@ ___
 支持typescript。  
 支持动画曲线（贝塞尔曲线）目前已内置了部分。  
 分为两种模式：整段动画、阶段动画  
-插件例子：[整段动画](https://codesandbox.io/s/jian-dan-dong-hua-bdusy?file=/src/App.tsx)   [分段动画](https://codesandbox.io/s/fu-za-dong-hua-li-zi-3cuzm?file=/src/App.tsx)   [整段动画实践](https://codesandbox.io/s/jian-dan-li-zi---zu-jian-cdykh)  
+插件例子：[menu动画](https://codesandbox.io/s/menudong-hua-li-zi-9p1ww?file=/src/components/menuItem.tsx)    [input提示动画](https://codesandbox.io/s/jian-dan-li-zi---zu-jian-cdykh)      [整段动画](https://codesandbox.io/s/jian-dan-dong-hua-bdusy?file=/src/App.tsx)     [分段动画](https://codesandbox.io/s/fu-za-dong-hua-li-zi-3cuzm?file=/src/App.tsx)   
 
 > css问题：  
 > 0-1000ms（left: 0-1000px ) 100-200ms (background-color: red->green )  
