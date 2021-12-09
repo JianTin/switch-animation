@@ -9,14 +9,10 @@ export namespace storeNamespace {
     export type colorValue = [number, number, number, number]
     // boxShadow储存的value
     type shadowNumber = [number, number, number, number]
-    export type boxShadowValue = {
-        inset: number[],// 哪部分具有inset
-        // color: colorValue[],
-        shadowArray: Array<{
-            color: colorValue,
-            shadowNumber: shadowNumber
-        }>
-    }
+    export type boxShadowValue = Array<{
+        color: colorValue,
+        shadowNumber: shadowNumber
+    }>
     // styleValue
     // 分几种情况：基础style、color、box-shadow
     type storeStyleValue = number | colorValue | boxShadowValue
@@ -24,10 +20,14 @@ export namespace storeNamespace {
     export type interfaceUnit = {
         unit: string
     }
+    // 哪部分具有inset, box-shadow 专用
+    export type interfaceInset = {
+        inset?: number[] 
+    }
     // style级别
     export type styleStore =  {
         [key in styleStoreKey]: storeStyleValue
-    } & interfaceUnit
+    } & interfaceUnit & interfaceInset
     // 不同方向存储的value值
     type durationDirectionValue = {
         startDuration: number

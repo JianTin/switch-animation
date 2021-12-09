@@ -203,7 +203,6 @@ var Store = /*#__PURE__*/function () {
   _proto.handelColorParams = function handelColorParams(valueObj) {
     var _this4 = this;
 
-    console.log(valueObj);
     return Object.keys(valueObj).reduce(function (prev, key) {
       _newArrowCheck(this, _this4);
 
@@ -253,9 +252,8 @@ var Store = /*#__PURE__*/function () {
         minValDistanceZero: minValDistanceZero,
         unit: unit
       };
-      console.log(this.store);
     }
-  } // 生成 box-shadow
+  } // 生成 box-shadow store
   ;
 
   _proto.generateBoxShadow = function generateBoxShadow(type, name, valueObj, unit, duration) {
@@ -266,7 +264,7 @@ var Store = /*#__PURE__*/function () {
     var cleanUnitRegExp = new RegExp(unit, 'g'); //inset 2px 2px 2px 1px red, inset 2px 2px 2px 1px red
 
     var multipleStartShadow = startValue.replace(cleanUnitRegExp, '').split(/,(?![^\(]*\))/);
-    var multipleEndShadow = endValue.replace(cleanUnitRegExp, '').split(/,(?![^\(]*\))/); // ['inset 2px 2px 2px 1px red', 'inset 2px 2px 2px 1px red']
+    var multipleEndShadow = endValue.replace(cleanUnitRegExp, '').split(/,(?![^\(]*\))/); // ['inset 2px 2px 2px 1px red', 'inset 2px 2px 2px 1px red'] -> 
 
     var _multipleStartShadow$ = multipleStartShadow.reduce(function (prev, startShadow, index) {
       _newArrowCheck(this, _this5);
@@ -305,7 +303,58 @@ var Store = /*#__PURE__*/function () {
         inset = _multipleStartShadow$.inset,
         shadowNumber = _multipleStartShadow$.shadowNumber;
 
-    console.log(color, inset, shadowNumber); // color ,inset ,shadowNumber
+    var storeObj = color.reduce(function (prev, colorValueObj, index) {
+      _newArrowCheck(this, _this5);
+
+      var shadowValueObj = shadowNumber[index]; // color
+
+      var _this$handelArrayToSt2 = this.handelArrayToStyleStore(colorValueObj, duration),
+          colorStartValue = _this$handelArrayToSt2.startValue,
+          colorEndValue = _this$handelArrayToSt2.endValue,
+          colorMillisecond = _this$handelArrayToSt2.millisecond,
+          colorDistance = _this$handelArrayToSt2.distance,
+          colorMinValDistanceZero = _this$handelArrayToSt2.minValDistanceZero; // shadow
+
+
+      var _this$handelArrayToSt3 = this.handelArrayToStyleStore(shadowValueObj, duration),
+          shadowStartValue = _this$handelArrayToSt3.startValue,
+          shadowEndValue = _this$handelArrayToSt3.endValue,
+          shadowMillisecond = _this$handelArrayToSt3.millisecond,
+          shadowDistance = _this$handelArrayToSt3.distance,
+          shadowMinValDistanceZero = _this$handelArrayToSt3.minValDistanceZero;
+
+      prev['startValue'].push({
+        color: colorStartValue,
+        shadowNumber: shadowStartValue
+      });
+      prev['endValue'].push({
+        color: colorEndValue,
+        shadowNumber: shadowEndValue
+      });
+      prev['millisecond'].push({
+        color: colorMillisecond,
+        shadowNumber: shadowMillisecond
+      });
+      prev['distance'].push({
+        color: colorDistance,
+        shadowNumber: shadowDistance
+      });
+      prev['minValDistanceZero'].push({
+        color: colorMinValDistanceZero,
+        shadowNumber: shadowMinValDistanceZero
+      });
+      return prev;
+    }.bind(this), {
+      startValue: [],
+      endValue: [],
+      millisecond: [],
+      distance: [],
+      minValDistanceZero: []
+    });
+    this.store[type]['styleList'][name] = Object.assign(storeObj, {
+      unit: unit,
+      inset: inset
+    });
   };
 
   return Store;
@@ -321,7 +370,9 @@ var Calculate = /*#__PURE__*/function () {
   _proto.calculateVal = function calculateVal(styleStore, name, runDate, direction, easingFn) {
     // 选择不同
     // as color 是因为ts原因
-    if (storeInstance.colorNameArray.includes(name)) {
+    if (name === 'box-shadow') {
+      return this.shadowCalulate(styleStore, runDate, direction, easingFn);
+    } else if (storeInstance.colorNameArray.includes(name)) {
       // 颜色
       return this.colorCalculate(styleStore, runDate, direction, easingFn);
     } else {
@@ -336,7 +387,8 @@ var Calculate = /*#__PURE__*/function () {
         endValue = store.endValue,
         millisecond = store.millisecond,
         distance = store.distance,
-        minValDistanceZero = store.minValDistanceZero; // 获取 每毫秒移动距离
+        minValDistanceZero = store.minValDistanceZero,
+        unit = store.unit; // 获取 每毫秒移动距离
 
     var calculate = millisecond * runDate;
     var styleVal = 0;
@@ -349,13 +401,13 @@ var Calculate = /*#__PURE__*/function () {
     } // distance 为0 代表设置值一模一样，直接返回 不需要做曲线处理
 
 
-    if (distance === 0) return styleVal; // 解释
+    if (distance === 0) return styleVal + unit; // 解释
     // 计算出 当前动画值(不能 大于 距离值，所以需要减少到距离值内) 在 距离值中占多少比率 = 当前动画比率
     // 当前动画比率 传入 曲线函数 = 曲线中的占比
     // 距离值 * 曲线中占比 = 当前应该曲线动画值
 
     var easingRatio = easingFn((styleVal - minValDistanceZero) / distance);
-    return easingRatio * distance + minValDistanceZero;
+    return easingRatio * distance + minValDistanceZero + unit;
   } // 计算color值
   ;
 
@@ -419,6 +471,70 @@ var Calculate = /*#__PURE__*/function () {
     }
   };
 
+  _proto.shadowCalulate = function shadowCalulate(store, runDate, direction, easingFn) {
+    var _this2 = this;
+
+    var startValue = store.startValue,
+        endValue = store.endValue,
+        millisecond = store.millisecond,
+        distance = store.distance,
+        minValDistanceZero = store.minValDistanceZero,
+        unit = store.unit,
+        inset = store.inset;
+    return startValue.reduce(function (prev, currentStart, index) {
+      var _this3 = this;
+
+      _newArrowCheck(this, _this2);
+
+      // 多个shadow设置
+      if (index !== 0) {
+        prev += ',';
+      }
+
+      if (inset.includes(index)) {
+        prev += 'inset';
+      }
+
+      var startColor = currentStart.color,
+          startShadowNumber = currentStart.shadowNumber;
+      var _endValue$index = endValue[index],
+          endColor = _endValue$index.color,
+          endShadowNumber = _endValue$index.shadowNumber;
+      var _millisecond$index = millisecond[index],
+          millisecondColor = _millisecond$index.color,
+          millisecondShadowNumber = _millisecond$index.shadowNumber;
+      var _distance$index = distance[index],
+          distanceColor = _distance$index.color,
+          distanceShadowNumber = _distance$index.shadowNumber;
+      var _minValDistanceZero$i = minValDistanceZero[index],
+          disancenZeroColor = _minValDistanceZero$i.color,
+          disancenZeroShadowNumber = _minValDistanceZero$i.shadowNumber;
+      var caluclateColor = this.colorCalculate({
+        startValue: startColor,
+        endValue: endColor,
+        millisecond: millisecondColor,
+        distance: distanceColor,
+        minValDistanceZero: disancenZeroColor,
+        unit: ''
+      }, runDate, direction, easingFn);
+      var caluclateShadowValue = startShadowNumber.reduce(function (prev, startNumber, index) {
+        _newArrowCheck(this, _this3);
+
+        prev += ' ' + this.baseStyleCalulate({
+          startValue: startNumber,
+          endValue: endShadowNumber[index],
+          millisecond: millisecondShadowNumber[index],
+          distance: distanceShadowNumber[index],
+          minValDistanceZero: disancenZeroShadowNumber[index],
+          unit: unit
+        }, runDate, direction, easingFn);
+        return prev;
+      }.bind(this), '');
+      prev += caluclateShadowValue + (" " + caluclateColor);
+      return prev;
+    }.bind(this), '');
+  };
+
   return Calculate;
 }();
 
@@ -439,14 +555,14 @@ var SetStyleValue = /*#__PURE__*/function () {
         transformVal = transformVal.replace(new RegExp(styleName + "\\(-*[0-9]*\\.*[0-9]*" + unit + "\\)", 'g'), '');
       }
 
-      transformVal += " " + styleName + "(" + styleVal + unit + ")";
+      transformVal += " " + styleName + "(" + styleVal + ")";
       element.style['transform'] = transformVal;
     }.bind(this);
 
     this.setBaseStyle = function (element, styleName, styleVal, unit) {
       _newArrowCheck(this, _this);
 
-      element.style[styleName] = styleVal + unit;
+      element.style[styleName] = styleVal;
     }.bind(this);
 
     this.transformKey = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'translateX', 'translateY', 'translateZ', 'scaleX', 'scaleY', 'scaleZ', 'skewX', 'skewY'];
@@ -543,7 +659,8 @@ var IsRunMiddleAnimation = /*#__PURE__*/function () {
           easing = styleObj.easing;
       delete styleObj['onStart'];
       delete styleObj['onEnd'];
-      delete styleObj['onAnimation']; // // 获取运行多长时间
+      delete styleObj['onAnimation'];
+      delete styleObj['easing']; // // 获取运行多长时间
 
       var continuedDuration = endDuration - startDuration;
       new SwitchAnimation({

@@ -18,25 +18,18 @@ export default function(){
                 //         unit: ''
                 //     }
                 // },
-                '200-800': {
-                    // "background-color": {
-                    //     startValue: "red",
-                    //     endValue: "rgba(255,191,111,1)",
-                    //     unit: ""
-                    // },
+                '0-1000': {
                     "box-shadow": {
-                        startValue: "inset 2px 2px 2px 1px rgba(0,0,0,0.2)",
-                        endValue: "inset 2px 2px 2px 1px red",
+                        startValue: "0px 0px 0px 0px #dbdbdb",
+                        endValue: "0px 0px 12px 10px red",
                         unit: 'px'
                     }
                 },
-                '0-1000': {
-                    translateX: {
-                        startValue: '0',
-                        endValue: '50',
-                        unit: 'px'
-                    }
-                }
+                // translateX: {
+                //     startValue: '0',
+                //     endValue: '50',
+                //     unit: 'px'
+                // }
                 // '0-1000': {
                 //     translateX: {
                 //         startValue: '0',

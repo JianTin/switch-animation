@@ -21,12 +21,12 @@ class SetStyleValue {
         const val = calculateInstance.calculateVal(styleStore, styleName, runDate, direction, easingFn)
         // 处理transform
         if(this.transformKey.includes(styleName)){
-            this.setTransform(element, styleName, val as number, unit)
+            this.setTransform(element, styleName, val as string, unit)
         } else { // 处理正常
-            this.setBaseStyle(element, styleName, val as number, unit)
+            this.setBaseStyle(element, styleName, val as string, unit)
         }
     }
-    setTransform = (element: HTMLElement, styleName: string, styleVal: number, unit: string)=> {
+    setTransform = (element: HTMLElement, styleName: string, styleVal: string, unit: string)=> {
         let transformVal = element.style['transform']
         const bool = transformVal.includes(styleName)
         // transform 内部存在该值，删除重新处理
@@ -34,11 +34,11 @@ class SetStyleValue {
             // /translateX\([0-9]+%{0,}[p|x]{0,}\)/
             transformVal = transformVal.replace(new RegExp(`${styleName}\\(-*[0-9]*\\.*[0-9]*${unit}\\)`, 'g'), '')
         }
-        transformVal += ` ${styleName}(${styleVal}${unit})`
+        transformVal += ` ${styleName}(${styleVal})`
         element.style['transform'] = transformVal
     }
-    setBaseStyle = (element: HTMLElement, styleName: string, styleVal: number, unit: string)=> {
-        element.style[styleName as any] = styleVal+unit
+    setBaseStyle = (element: HTMLElement, styleName: string, styleVal: string, unit: string)=> {
+        element.style[styleName as any] = styleVal
     }
 }
 

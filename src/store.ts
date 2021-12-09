@@ -49,7 +49,7 @@ class Store {
                 styleList: {},
                 instance: null,
                 durationObj: null,
-                easingFn: null
+                easingFn: null,
             }
        }
     }
@@ -129,7 +129,6 @@ class Store {
     }
     // 处理颜色 -> rgba()
     handelColorParams(valueObj: paramsValueObj){
-        console.log(valueObj)
         return Object.keys(valueObj).reduce<colorValueObj>((prev, key)=>{
             prev[key as keyof colorValueObj] = colorString.get(valueObj[key as keyof typeof valueObj])!.value
             return prev
@@ -167,17 +166,16 @@ class Store {
                 minValDistanceZero: minValDistanceZero as storeNamespace.colorValue,
                 unit
             }
-            console.log(this.store)
         }
     }
-    // 生成 box-shadow
+    // 生成 box-shadow store
     generateBoxShadow(type: string, name: styleNamespace.shadow, valueObj: paramsValueObj, unit: string, duration: number){
         const {startValue, endValue} = valueObj
         const cleanUnitRegExp = new RegExp(unit, 'g')
         //inset 2px 2px 2px 1px red, inset 2px 2px 2px 1px red
         const multipleStartShadow = startValue.replace(cleanUnitRegExp, '').split((/,(?![^\(]*\))/))
         const multipleEndShadow = endValue.replace(cleanUnitRegExp, '').split((/,(?![^\(]*\))/))
-        // ['inset 2px 2px 2px 1px red', 'inset 2px 2px 2px 1px red']
+        // ['inset 2px 2px 2px 1px red', 'inset 2px 2px 2px 1px red'] -> 
         const {color, inset, shadowNumber} = multipleStartShadow.reduce<{
             color: Array<handelArrayParamsObj>,
             inset: number[],
@@ -208,8 +206,28 @@ class Store {
         },{
             color: [],inset: [],shadowNumber: []
         })
-        console.log(color, inset, shadowNumber)
-        // color ,inset ,shadowNumber
+        const storeObj = color.reduce<
+            {[key in storeNamespace.styleStoreKey]: storeNamespace.boxShadowValue}
+        >((prev, colorValueObj, index)=>{
+            const shadowValueObj = shadowNumber[index]
+            // color
+            const {
+                startValue: colorStartValue, endValue: colorEndValue, millisecond: colorMillisecond, distance: colorDistance, minValDistanceZero: colorMinValDistanceZero
+            } = this.handelArrayToStyleStore(colorValueObj, duration) as {[key in storeNamespace.styleStoreKey]: [number, number, number, number]}
+            // shadow
+            const {
+                startValue: shadowStartValue, endValue: shadowEndValue, millisecond: shadowMillisecond, distance: shadowDistance, minValDistanceZero: shadowMinValDistanceZero
+            } = this.handelArrayToStyleStore(shadowValueObj, duration) as {[key in storeNamespace.styleStoreKey]: [number, number, number, number]}
+            prev['startValue'].push({color: colorStartValue, shadowNumber: shadowStartValue})
+            prev['endValue'].push({color: colorEndValue, shadowNumber: shadowEndValue})
+            prev['millisecond'].push({color: colorMillisecond, shadowNumber: shadowMillisecond})
+            prev['distance'].push({color: colorDistance, shadowNumber: shadowDistance})
+            prev['minValDistanceZero'].push({color: colorMinValDistanceZero, shadowNumber: shadowMinValDistanceZero})
+            return prev
+        }, {
+            startValue: [], endValue: [], millisecond: [], distance: [], minValDistanceZero: []
+        })
+        this.store[type]['styleList'][name] = Object.assign(storeObj, {unit, inset})
     }
 }
 

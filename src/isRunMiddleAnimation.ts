@@ -16,6 +16,7 @@ class IsRunMiddleAnimation {
             delete styleObj['onStart']
             delete styleObj['onEnd']
             delete styleObj['onAnimation']
+            delete styleObj['easing']
             // // 获取运行多长时间
             let continuedDuration = endDuration -  startDuration
             new SwitchAnimation<T>({
