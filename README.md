@@ -97,9 +97,9 @@ switchAnimation()
 transform：我这边拆分为 单个变换，如 translateX、translateY、rotate、scaleX...
 translate: 可以通过 translateX + translateY 代替  
 scale: 可以通过 scaleX + scaleY 代替  
-border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  [border 例子](https://codesandbox.io/s/border-li-zi-jf2tl)
-box-shadow: 目前不支持  
+border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  [border 例子](https://codesandbox.io/s/border-li-zi-jf2tl)  
 支持：  
+box-shadow: 支持，但有格式限制（详情见下方） [阴影例子](https://codesandbox.io/s/yin-ying-li-zi-99cn7)  
 'margin' | 'margin-top' | 'margin-bottom' | 'margin-left' | 'margin-right'  
 'border-width' | 'border-color'  
 'padding' | 'padding-top' | 'padding-bottom' | 'padding-left' | 'padding-right'  
@@ -157,7 +157,7 @@ animationInstance {
 #### 特殊cssName 设置
 颜色 --- color、'background-color'、'border-color'
 ```
-    startVal、endValue: rgb(x,x,x)、rgba(x,x,x,x)、##373D49、hsl(360, 100%, 50%)、hwb(60, 3%, 60%)、red(color-name)...
+    startValue、endValue: rgb(x,x,x)、rgba(x,x,x,x)、##373D49、hsl(360, 100%, 50%)、hwb(60, 3%, 60%)、red(color-name)...
     例：
         color: {
             startValue: 'green',
@@ -165,7 +165,19 @@ animationInstance {
             unit: ''
         }
 ```
-
+box-shadow
+```
+    startValue、endValue： "0 0 0 0 black"(x偏移、y偏移、阴影模糊半径、阴影扩散半径、阴影颜色)
+                        "inset 0 0 0 0 balck"(阴影在框内)
+                        "0 0 5 5 black, 2 2 0 0 red"（多个阴影以 逗号， 进行分割）
+    unit: 单位 --- 'px' | 'em' ...
+    例:
+        'box-shadow': {
+            startValue: '0 0 0 0 black',
+            endValue: '0 0 30 2 white',
+            unit: 'px'
+        }
+```
 #### 动画曲线
 easing: [number, number, number, number] | string (代表内置的动画曲线)   
 > (内置动画曲线 效果查看  ---  [https://easings.net/cn](https://easings.net/cn) )  

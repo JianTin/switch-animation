@@ -8,7 +8,7 @@ export default function(){
     useEffect(()=>{
         event.current = new SwitchAnimation({
             element: elementRef.current as HTMLDivElement,
-            duration: 1000,
+            duration: 800,
             // easing: "easeInOutBack",
             middleStyle: {
                 // '0-500': {
@@ -18,10 +18,10 @@ export default function(){
                 //         unit: ''
                 //     }
                 // },
-                '0-1000': {
+                '0-800': {
                     "box-shadow": {
-                        startValue: "0px 0px 0px 0px #dbdbdb",
-                        endValue: "0px 0px 12px 10px red",
+                        startValue: "0 0 0 0 black",
+                        endValue: "0 0 30 2 white",
                         unit: 'px'
                     }
                 },
