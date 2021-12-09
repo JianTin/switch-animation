@@ -1,6 +1,6 @@
 {
   "name": "switch-animation",
-  "version": "1.1.0",
+  "version": "1.1.5",
   "description": "Support complex switching animation to ensure that there will be no failure in the middle",
   "main": "lib/bundle.js",
   "module": "es/bundle.js",
