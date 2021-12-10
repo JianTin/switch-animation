@@ -1,6 +1,4 @@
 // 运算最终 value
-import storeInstance from './store'
-// import {styleName, styleStore, colorStore, baseStore, color} from './base'
 import {styleNamespace} from '../@types/index'
 import {storeNamespace} from '../@types/store'
 import {calculateNamespace} from '../@types/calculate'
@@ -13,7 +11,7 @@ class Calculate {
         // as color 是因为ts原因
         if(name === 'box-shadow'){
             return this.shadowCalulate(styleStore as calculateNamespace.shadowStore, runDate, direction, easingFn)
-        } else if(storeInstance.colorNameArray.includes(name as styleNamespace.color)) {
+        } else if(['color', 'background-color', 'border-color'].includes(name as styleNamespace.color)) {
             // 颜色
             return this.colorCalculate(styleStore as calculateNamespace.colorStore, runDate, direction, easingFn)
         } else {

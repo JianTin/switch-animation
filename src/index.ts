@@ -1,7 +1,9 @@
-import storeInstance from "./store"
+import Store from "./store"
 import setStyleInstance from "./setStyle"
 import isRunMiddleInstance from './isRunMiddleAnimation'
-import {configNamespace, styleNamespace} from '../@types/index'
+import {configNamespace, styleNamespace, animationInstance} from '../@types/index'
+import {storeInstance} from '../@types/store'
+
 
 class Public <T extends configNamespace.elementKey>{
     duration: number
@@ -21,7 +23,9 @@ class Public <T extends configNamespace.elementKey>{
     durationType: string
     // 曲线
     easing: configNamespace.easingVal
-    constructor(elementConfig: configNamespace.animationConfig<T>){
+    // globalStore
+    storeInstance: storeInstance
+    constructor(elementConfig: configNamespace.animationConfig<T>, storeInstance: storeInstance){
         const {
             element,
             targetStyle,
@@ -51,11 +55,12 @@ class Public <T extends configNamespace.elementKey>{
         this.isPositive = true
         this.animationShow = false
         this.easing = easing
+        this.storeInstance = storeInstance
         this.initEvent(elementConfig)
     }
     // 初始化，保存当前 type实例，每个styleName 每毫秒计算值
     initEvent = (elementConfig: configNamespace.animationConfig<T>) => {
-        const {durationType, easing} = this
+        const {durationType, easing, storeInstance} = this
         const {targetStyle, middleStyle, duration} = elementConfig
         // 初始化保存 globalInstance
         if(durationType === 'all'){
@@ -63,7 +68,7 @@ class Public <T extends configNamespace.elementKey>{
         }
         if(!targetStyle) {
             // 如果没有 targetStyle 代表使用 middle模式
-            return isRunMiddleInstance.middleAnimationInit(middleStyle as configNamespace.middleStyle)
+            return isRunMiddleInstance.middleAnimationInit(middleStyle as configNamespace.middleStyle, storeInstance)
         }
         // 往storeStyle存储
         Object.keys(targetStyle).forEach(styleName=>{
@@ -85,7 +90,7 @@ class Public <T extends configNamespace.elementKey>{
     }
     // 重置元素style -> 开始 / 结束
     reset = (direction: boolean)=> {
-        const {targetStyle, durationType, duration, element} = this
+        const {targetStyle, durationType, duration, element, storeInstance} = this
         const {onAnimation} = this.AnimationCallback
         if(!targetStyle) return;
         const typeStore = storeInstance.store[durationType]
@@ -102,12 +107,13 @@ class Public <T extends configNamespace.elementKey>{
 }
 
 // 整体时间计算，调用执行动画
-class Switch<T extends configNamespace.elementKey> extends Public<T> {
-    constructor(elementConfig: configNamespace.animationConfig<T>){
-        super(elementConfig)
+export class Animation<T extends configNamespace.elementKey> extends Public<T> {
+    constructor(elementConfig: configNamespace.animationConfig<T>, storeInstance: storeInstance){
+        super(elementConfig, storeInstance)
     }
     // start
-    start = ()=> {
+    startAnimation = ()=> {
+        const {storeInstance} = this
         this.isInit = false
         this.isPositive = true
         // 计算时间
@@ -115,7 +121,7 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
         this.endDate = currentDate + this.duration
         this.startDate = currentDate
         this.animationShow = true
-        // targetStyle 没有。代表是 middleAnimation设置isStart
+        // targetStyle 没有。代表是 middleAnimation设置isStart(保证middle 能运行重置动画)
         if(!this.targetStyle){
             Object.values(storeInstance.store).forEach(({durationObj})=>durationObj!.isStart = true)
         }
@@ -123,11 +129,11 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
         this.runSwitchAnimation(true)
     }
     // switch
-    switch = ()=> {
+    switchAnimation = ()=> {
         const onStart = this.AnimationCallback.onStart
         // 初始化
         if(this.isInit) {
-            this.start()
+            this.startAnimation()
         } else {
             // 开始切换
             this.animationShow = this.isPositive = !this.isPositive
@@ -142,7 +148,7 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
     }
     runSwitchAnimation = (direction: boolean)=> {
         requestAnimationFrame(()=>{
-            const {startDate, endDate, element, targetStyle, isPositive, durationType} = this
+            const {startDate, endDate, element, targetStyle, isPositive, durationType, storeInstance} = this
             const {onAnimation} = this.AnimationCallback
             const currentDate = new Date().valueOf()
             this.currentDate = currentDate
@@ -169,22 +175,28 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
                 if(onAnimation)onAnimation(element)
             } else {
                 // 运行间断动画
-                Object.keys(storeInstance.store).forEach(middleDuration=>isRunMiddleInstance.runMiddleAnimation(runDate, middleDuration, direction))
+                Object.keys(storeInstance.store).forEach(middleDuration=>isRunMiddleInstance.runMiddleAnimation(runDate, middleDuration, direction, storeInstance))
             }
             this.runSwitchAnimation(direction);
         })
     }
 }
 
-export default class SwitchAnimation<T extends configNamespace.elementKey> extends Switch<T> {
+export default class SwitchAnimation<T extends configNamespace.elementKey>{
+    // 每次唯一的 storeInstance
+    storeInstance: storeInstance
+    animationInstance: animationInstance
     constructor(elementConfig: configNamespace.animationConfig<T>){
-        super(elementConfig)
+        this.storeInstance = new Store()
+        this.animationInstance = new Animation(elementConfig, this.storeInstance)
+        console.log(this.storeInstance)
     }
     getInstanceEvent = ()=>{
+        const {animationShow, startAnimation, switchAnimation} = this.animationInstance
         return {
-            isAnimationShow: ()=> this.animationShow,
-            startAnimation: this.start,
-            switchAnimation: this.switch
+            isAnimationShow: ()=> animationShow,
+            startAnimation,
+            switchAnimation
         }
     }
 }

@@ -18,7 +18,7 @@
 */
 import easing from './easing'
 import colorString from 'color-string'
-import {switchAnimationInstance, styleNamespace, configNamespace} from '../@types/index'
+import {animationInstance, styleNamespace, configNamespace} from '../@types/index'
 import {storeNamespace} from '../@types/store'
 
 // 传递得value对象
@@ -36,7 +36,7 @@ type handelArrayParamsObj = {
 }
 
 class Store {
-    globalStore: switchAnimationInstance | null
+    globalStore: animationInstance | null
     store: {
         [type: string]: storeNamespace.typeStore
     }
@@ -58,7 +58,7 @@ class Store {
        }
     }
     // 全局的store，第一次初始化调用
-    initGlobalStore = (instance: switchAnimationInstance)=>{
+    initGlobalStore = (instance: animationInstance)=>{
         this.globalStore = instance
     }
     // 添加storeStyle
@@ -74,7 +74,7 @@ class Store {
        console.log(this.store)
     }
     // 添加当前实例
-    addStoreInstance = (type: string, instance: switchAnimationInstance)=> {
+    addStoreInstance = (type: string, instance: animationInstance)=> {
        this.createType(type)
        this.store[type]['instance'] = instance
     }
@@ -217,4 +217,4 @@ class Store {
     }
 }
 
-export default new Store()
+export default Store

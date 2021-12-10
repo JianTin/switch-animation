@@ -65,8 +65,8 @@ export type getInstanceEventValue = {
     startAnimation: ()=>void
     switchAnimation:()=>void
 }
-// switchAnimation实例
-export interface switchAnimationInstance {
+// animation实例
+export interface animationInstance {
     duration: number
     currentDate: number
     startDate: number
@@ -84,7 +84,8 @@ export interface switchAnimationInstance {
     durationType: string
     // 曲线
     easing: configNamespace.easingVal
-    getInstanceEvent:()=>(getInstanceEventValue)
+    startAnimation: ()=>void
+    switchAnimation: ()=>void
 }
 
 declare module "switch-animation" {

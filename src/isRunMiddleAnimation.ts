@@ -1,5 +1,5 @@
-import SwitchAnimation from './index'
-import storeInstance from './store'
+import { storeInstance } from './../@types/store.d';
+import {Animation} from './index'
 import {configNamespace} from '../@types/index'
 
 // 用于做 运行的中间 动画，处理
@@ -10,7 +10,7 @@ class IsRunMiddleAnimation {
         return durationType.split('-').map(n=>Number(n))
     }
     // 用于生成，具有中间动画的 实例 和 运行时间对象
-    middleAnimationInit<T  extends configNamespace.elementKey>(middleStyle: configNamespace.middleStyle){
+    middleAnimationInit<T  extends configNamespace.elementKey>(middleStyle: configNamespace.middleStyle, storeInstance: storeInstance){
         Object.keys(middleStyle).forEach(durationType=>{
             const [startDuration, endDuration] = this.getDurationType(durationType)
             const styleObj = middleStyle[durationType]
@@ -21,20 +21,20 @@ class IsRunMiddleAnimation {
             delete styleObj['easing']
             // // 获取运行多长时间
             let continuedDuration = endDuration -  startDuration
-            new SwitchAnimation<T>({
+            new Animation<T>({
                 duration: continuedDuration,
                 element: storeInstance.globalStore?.element,
                 targetStyle: styleObj,
                 durationType,
                 easing: easing ? easing : storeInstance.globalStore?.easing,
                 onStart, onEnd, onAnimation
-            })
+            }, storeInstance)
             // 存储该type级别，正方向应该 运行的时间
             storeInstance.addStoreDirection(durationType, startDuration, endDuration)
         })
     }
     // 时间判断运行
-    runMiddleAnimation = (currentDate: number, durationType: string, currentDirection: boolean)=> {
+    runMiddleAnimation = (currentDate: number, durationType: string, currentDirection: boolean, storeInstance: storeInstance)=> {
         const  {instance, durationObj} = storeInstance.store[durationType]
         if(!instance || !durationObj) return;
         const {positive, negative, direction, isStart} = durationObj
@@ -49,10 +49,10 @@ class IsRunMiddleAnimation {
                 if(isStart) {
                     durationObj.isStart = false
                     // 调用
-                    instance.getInstanceEvent().startAnimation()
+                    instance.startAnimation()
                 } else {
                     // 调用
-                    instance.getInstanceEvent().switchAnimation()
+                    instance.switchAnimation()
                 }
             }
         }

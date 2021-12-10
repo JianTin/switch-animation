@@ -26,9 +26,9 @@ async function compile(){
             'color-string'
         ],
         plugins: [
-            rollupTypescript(),
             rollupCjs(),
             nodeResolve(),
+            rollupTypescript(),
             rollupBabel({
                 extensions: ['.ts', '.js'],
                 babelHelpers: 'runtime',
@@ -65,12 +65,12 @@ async function devCompile(){
     const bundle = await rollup({
         input: '../dev/main.ts',
         plugins: [
-            rollupTypescript(),
             rollupCjs(),
             nodeResolve(),
             rollupReplace({
                 'process.env.NODE_ENV': JSON.stringify('production')
             }),
+            rollupTypescript(),
             rollupBabel({
                 extensions: ['.ts', '.js', '.tsx'],
                 babelHelpers: 'bundled',

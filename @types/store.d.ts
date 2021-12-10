@@ -1,4 +1,4 @@
-import {styleNamespace, switchAnimationInstance} from './index'
+import {styleNamespace, animationInstance} from './index'
 import {EasingFunction} from 'bezier-easing'
 
 export namespace storeNamespace {
@@ -39,7 +39,7 @@ export namespace storeNamespace {
         styleList: {
             [name in styleNamespace.styleName]?: styleStore
         }
-        instance: switchAnimationInstance | null,
+        instance: animationInstance | null,
         durationObj: {
             positive: durationDirectionValue,
             negative: durationDirectionValue,
@@ -48,4 +48,14 @@ export namespace storeNamespace {
         } | null,
         easingFn: EasingFunction | null
     }
+}
+
+export interface storeInstance {
+    globalStore: animationInstance | null
+    store: {[key: string]: typeStore}
+    initGlobalStore: (instance: animationInstance)=>void
+    addStoreStyle: (type: string, name: styleNamespace.styleName, valueObj: paramsValueObj, unit: string, duration: number)=>void
+    addStoreInstance: (type: string, instance: animationInstance)=>void
+    addStoreDirection: (type: string, startDuration: number, endDuration: number)=>void
+    addStoreEasing: (type: string, easingVal: configNamespace.easingVal)=>void
 }
