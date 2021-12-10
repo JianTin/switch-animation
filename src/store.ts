@@ -1,13 +1,17 @@
 // 存储基础style
 /**
+ * styleStoreValue: {
+ *      key: startValue、endValue、millisecond、distance、minValDistanceZero
+ *      // baseStyle | colorStyle | box-shadow
+ *      value: number | [number, number, number, number] | Array<{color: [number...], shadowNumber: [number...]}>
+ * }
  * {
- *  styleList: {styleName: '毫秒 处理数', color/bark:[number, number, number] },
+ *  styleList: {styleName: styleStoreValue },
  *  durationObj:{
  *      positive, negative: {startDuration, endDuration},
  *      direction: bool
  *  },
  *  instance: ...,
- *  endValue
  * }
  * all:
  * 0-1000': 
@@ -67,6 +71,7 @@ class Store {
        } else {
            this.generateBaseStyle(type, name, valueObj, unit, duration)
        }
+       console.log(this.store)
     }
     // 添加当前实例
     addStoreInstance = (type: string, instance: switchAnimationInstance)=> {
@@ -95,7 +100,7 @@ class Store {
     addStoreEasing = (type: string, easingVal: configNamespace.easingVal) => {
         this.store[type]['easingFn'] = easing.createEasing(easingVal)
     }
-    // 生成基础style每毫秒值
+    // 生成基础style结构
     generateBaseStyle(type: string, name: styleNamespace.styleName, valueObj: paramsValueObj, unit:string, duration: number){
         const [startValue, endValue] = Object.values(valueObj).map(v=>Number(v))
         const millisecond = (endValue - startValue) / duration
@@ -136,25 +141,6 @@ class Store {
     }
     // 生成color每毫秒值
     generateColorStyle(type: string, name: styleNamespace.color, valueObj: paramsValueObj, unit: string, duration: number){
-        // const {startValue, endValue} = 
-        // sta: [0,0,0,0] end: [255,255,255,255]
-        // const [r1, g1, b1, a1] = startValue
-        // const [r2, g2, b2, a2] = endValue
-        // // 进行计算 每毫秒移动的值
-        // const millisecond = [r2-r1, g2-g1, b2-b1, a2-a1].map(val=>val/duration)
-        // const {distance, minValDistanceZero} = startValue.reduce<{distance: number[],minValDistanceZero: number[]}>((prev, startColor, index)=>{
-        //     const endColor = endValue[index]
-        //     prev['distance'].push(
-        //         endColor > startColor ? endColor - startColor : startColor - endColor
-        //     )
-        //     prev['minValDistanceZero'].push(
-        //         endColor > startColor ? startColor : endColor
-        //     )
-        //     return prev
-        // }, {
-        //     distance: [],
-        //     minValDistanceZero: []
-        // })
         const {startValue, endValue, millisecond, distance, minValDistanceZero} = this.handelArrayToStyleStore(this.handelColorParams(valueObj), duration)
         if(startValue.length === 4 && endValue.length === 4 && millisecond.length === 4) {
             if(!this.store[type]) return;

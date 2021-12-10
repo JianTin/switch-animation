@@ -55,14 +55,15 @@ class Public <T extends configNamespace.elementKey>{
     }
     // 初始化，保存当前 type实例，每个styleName 每毫秒计算值
     initEvent = (elementConfig: configNamespace.animationConfig<T>) => {
-        const {targetStyle, duration, durationType, easing} = this
+        const {durationType, easing} = this
+        const {targetStyle, middleStyle, duration} = elementConfig
         // 初始化保存 globalInstance
         if(durationType === 'all'){
             storeInstance.initGlobalStore(this as any)
         }
         if(!targetStyle) {
             // 如果没有 targetStyle 代表使用 middle模式
-            return  isRunMiddleInstance.middleAnimationInit(elementConfig)
+            return isRunMiddleInstance.middleAnimationInit(middleStyle as configNamespace.middleStyle)
         }
         // 往storeStyle存储
         Object.keys(targetStyle).forEach(styleName=>{
@@ -131,7 +132,7 @@ class Switch<T extends configNamespace.elementKey> extends Public<T> {
             // 开始切换
             this.animationShow = this.isPositive = !this.isPositive
             // 开始进行切换
-            // 计算出，结束时间 = 当前时间 + （剩余时间 | 0）
+            // 计算出，结束时间 = 当前时间 + 已运行时间
             this.endDate = new Date().valueOf() + (this.currentDate - this.startDate)
             // 计算出开始位置
             this.startDate = this.endDate - this.duration

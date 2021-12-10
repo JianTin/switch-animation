@@ -5,12 +5,14 @@ import {configNamespace} from '../@types/index'
 // 用于做 运行的中间 动画，处理
 class IsRunMiddleAnimation {
     constructor(){}
+    // 获取 '开始-结束' -> [开始，结束]
+    getDurationType(durationType: string){
+        return durationType.split('-').map(n=>Number(n))
+    }
     // 用于生成，具有中间动画的 实例 和 运行时间对象
-    middleAnimationInit<T  extends configNamespace.elementKey>(elementConfig: configNamespace.animationConfig<T>){
-        const {element, middleStyle} = elementConfig
-        if(!middleStyle)return;
+    middleAnimationInit<T  extends configNamespace.elementKey>(middleStyle: configNamespace.middleStyle){
         Object.keys(middleStyle).forEach(durationType=>{
-            const [startDuration, endDuration] = durationType.split('-').map(n=>Number(n))
+            const [startDuration, endDuration] = this.getDurationType(durationType)
             const styleObj = middleStyle[durationType]
             const {onStart, onEnd, onAnimation, easing} = styleObj
             delete styleObj['onStart']
@@ -21,7 +23,7 @@ class IsRunMiddleAnimation {
             let continuedDuration = endDuration -  startDuration
             new SwitchAnimation<T>({
                 duration: continuedDuration,
-                element,
+                element: storeInstance.globalStore?.element,
                 targetStyle: styleObj,
                 durationType,
                 easing: easing ? easing : storeInstance.globalStore?.easing,
@@ -32,8 +34,8 @@ class IsRunMiddleAnimation {
         })
     }
     // 时间判断运行
-    runMiddleAnimation = (currentDate: number, middleDuration: string, currentDirection: boolean)=> {
-        const  {instance, durationObj} = storeInstance.store[middleDuration]
+    runMiddleAnimation = (currentDate: number, durationType: string, currentDirection: boolean)=> {
+        const  {instance, durationObj} = storeInstance.store[durationType]
         if(!instance || !durationObj) return;
         const {positive, negative, direction, isStart} = durationObj
         if(currentDirection !== direction || isStart) {

@@ -10,43 +10,30 @@ export default function(){
             element: elementRef.current as HTMLDivElement,
             duration: 800,
             // easing: "easeInOutBack",
-            middleStyle: {
-                // '0-500': {
-                //     'background-color': {
-                //         startValue: 'red',
-                //         endValue: 'rgba(35, 81, 91, 0.8)',
-                //         unit: ''
-                //     }
-                // },
-                '0-800': {
-                    "box-shadow": {
-                        startValue: "0 0 0 0 black",
-                        endValue: "0 0 30 2 white",
-                        unit: 'px'
-                    }
-                },
-                // translateX: {
-                //     startValue: '0',
-                //     endValue: '50',
-                //     unit: 'px'
-                // }
-                // '0-1000': {
-                //     translateX: {
-                //         startValue: '0',
-                //         endValue: '500',
-                //         unit: 'px'
-                //     }
-                // }
+            targetStyle: {
+                "translateX": {
+                    startValue: "0",
+                    endValue: "300",
+                    unit: 'px'
+                }
             }
-            // targetStyle: {
-            //     translateX: {
-            //         startValue: '0',
-            //         endValue: '100',
-            //         unit: 'px'
-            //     }
-            // }
         }).getInstanceEvent()
+        // update({
+        //     type: 'all',
+        // })
+        // read({
+        //     type: ''
+        // })
     }, [])
+    function update(){
+        // event.current!.updateTarget({
+        //     translateX: {
+        //         startValue: '-100',
+        //         endValue: "300",
+        //         unit: 'px'
+        //     }
+        // })
+    }
     return <>
         <button onClick={()=> event.current?.switchAnimation()}>switch</button>
         <div ref={elementRef} style={{

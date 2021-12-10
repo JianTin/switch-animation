@@ -6,6 +6,7 @@ const rollupTypescript = require('rollup-plugin-typescript2')
 const {babel: rollupBabel} = require('@rollup/plugin-babel')
 const rollupHtmlTemplate = require('rollup-plugin-generate-html-template')
 const rollupReplace = require('@rollup/plugin-replace')
+const {uglify : rollupUglify} = require('rollup-plugin-uglify')
 const browsersync = require('browser-sync').create()
 const {removeSync} = require('fs-extra')
 const {join, dirname} = require('path')
@@ -32,7 +33,8 @@ async function compile(){
                 extensions: ['.ts', '.js'],
                 babelHelpers: 'runtime',
                 configFile: join(root, '/babel.config.json')
-            })
+            }),
+            rollupUglify()
         ]
     })
     await bundle.write({
