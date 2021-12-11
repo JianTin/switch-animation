@@ -35,6 +35,7 @@ export default function(){
     return <>
         <button onClick={()=> event.current?.switchAnimation()}>switch</button>
         <button onClick={()=> event2.current?.switchAnimation()}>switch</button>
+        <button onClick={()=>console.log( event.current?.isAnimationShow())}></button>
         <div ref={elementRef} style={{
             width:'100px',
             height:'100px',

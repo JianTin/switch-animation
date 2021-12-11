@@ -13,9 +13,11 @@ class SwitchAnimation<T extends configNamespace.elementKey>{
         this.animationInstance = new Animation(elementConfig, this.storeInstance)
     }
     getInstanceEvent = ()=>{
-        const {animationShow, startAnimation, switchAnimation} = this.animationInstance
+        const {startAnimation, switchAnimation} = this.animationInstance
+        const that = this
         return {
-            isAnimationShow: ()=> animationShow,
+            // 保证更新 和 this指向
+            isAnimationShow: ()=> that.animationInstance.animationShow,
             startAnimation,
             switchAnimation
         }
