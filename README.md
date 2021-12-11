@@ -25,13 +25,13 @@ yarn add switch-animation
 html:
 <div style="border: 1px solid red; width: 100px; height: 100px; " ></div>
 js:
-import SwitchAnimation from 'switch-animation'
+import {wholeAnimation} from 'switch-animation'
 ...
-const {switchAnimation} = new SwitchAnimation({
+const {switchAnimation} = wholeAnimation({
     element: document.querySelector('div'),
     duration: 500,
     easing: 'easeInOutBack', // 可不传，默认 linear 曲线。
-    targetStyle: {
+    animation: {
         translateX: {
             startValue: '0',
             endValue: '100',
@@ -43,7 +43,7 @@ const {switchAnimation} = new SwitchAnimation({
             unit: ''
         }
     }
-}).getInstanceEvent()
+})
 switchAnimation()
 ...
 ```
@@ -53,12 +53,13 @@ switchAnimation()
 html:
 <div style='width:100px; height:100px; background-color:red;'></div>
 js:
+import {segmentedAnimation} from 'switch-animation'
 ...
-const {switchAnimation} = new SwitchAnimation({
+const {switchAnimation} = segmentedAnimation({
     element: document.querySelector('div'),
     duration: 800,
     easing: 'linear', // 默认linear，可不传递。将应用于每个时间段 动画曲线
-    middleStyle: {
+    animation: {
         '0-800': {
             easing: 'easeOutBack', // 每个时间段可以单独设置，做到覆盖全局 动画曲线
             translateX: {
@@ -87,7 +88,7 @@ const {switchAnimation} = new SwitchAnimation({
             } 
         }
     }
-}).getInstanceEvent()
+})
 switchAnimation()
 ...
 ```
@@ -113,46 +114,66 @@ box-shadow: 支持，但有格式限制（详情见下方） [阴影例子](http
 'perspective' | 'font-size' | 'opacity'  
 
 #### 基本参数
+wholeAnimation 和 segmentedAnimation 基本参数
 ```
-const animationInstance = new SwitchAnimation({
-    element: 必传，dom元素 --- element
-    duration：必传，动画时间 --- number
-    easing：非必传，默认 linear，作用于全局动画的曲线 --- [number, number, number, number] | string（详情下方 动画曲线）
-    onStart: 非必传，默认 null，动画开始运行时 触发 --- (element)=>void
-    onAnimation: 非必传, 默认null，动画进行更改element.style时 (不建议使用，会频繁调用) 触发 --- (element)=>void
-    onEnd: 非必传，默认null，动画结束时 触发 --- (element)=>void
-    // 下边是模式：二选一
-    targetStyle: { // 整段动画
-        cssName: { // 必传，设置的cssName （例： left | translateX | 'background-color' ）
+    {
+        element: 必传，dom元素 --- element
+        duration：必传，动画时间 --- number
+        easing：非必传，默认 linear，作用于全局动画的曲线 --- [number, number, number, number] | string（详情下方 动画曲线）
+        onStart: 非必传，默认 null，动画开始运行时 触发 --- (element)=>void
+        onAnimation: 非必传, 默认null，动画进行更改element.style时 (不建议使用，会频繁调用) 触发 --- (element)=>void
+        onEnd: 非必传，默认null，动画结束时 触发 --- (element)=>void
+        animation: ...
+    }
+```
+wholeAnimation: 整段动画
+```
+import {wholeAnimation} from 'switch-animation'
+const animationEvent = wholeAnimation({
+    ... (基本参数)
+    animation: {
+         cssName: { // 必传，设置的cssName （例： left | translateX | 'background-color' ）
             startValue: 必传, 开始cssValue值 --- string
             endValue: 必传，结束cssValue值 --- string
             unit: 必传，单位 --- string （例：'px' | '%' | 'deg' | '' ）
         }
         cssName...
     }
-    middleStyle: { // 分段动画
-        'startDuration-endDuration': { // 必传开始运行 和 结束运行的时间。例: ( '0-1000' | '300-700' )
+})
+```
+segmentedAnimation: 分段动画
+```
+import {segmentedAnimation} from 'switch-animation'
+const animationEvemt = segmentedAnimation({
+    ...(基本参数)
+    animation: {
+        // 必传开始运行 和 结束运行的时间。例: ( '0-1000' | '300-700' )
+        'startDuration-endDuration': { 
             easing: 非必传，默认以 全局动画曲线为主。可单独设置分段动画曲线
             onStart: 非必传，开始运行分段动画触发。
             onAnimation：...
             onEnd:...
             cssName: {
-                startValue,endValue,unit
+                startValue: string,
+                endValue: string,
+                unit: string
             },
             cssName...
         }
         'startDuration-endDuration'...
     }
 })
-// 返回值实例
-animationInstance {
-    getInstanceEvent:()=>({ // 通过调用实例的getInstanceEvent 获取封装的方法。
-        isAnimationShow:()=>boolean // isAnimationShow方法，调用后返回 boolean。true: 动画在显示中 / 已经显示 false反之
-        startAnimation: ()=>void // startAnimation方法，需要动画重新开始使用（大概率少用）
-        switchAnimation: ()=>void // switchAnimation方法，通过他调用动画 切换（开始 -> 结束、结束 -> 开始、中间切换）
-    })
+```
+返回事件
+```
+animationEvemt {
+    // isAnimationShow方法，调用后返回 boolean。true: 动画在显示中 / 已经显示， false：动画在关闭中 / 已关闭
+    isAnimationShow:()=>boolean
+    // startAnimation方法，需要动画重新开始使用（大概率少用）
+    startAnimation: ()=>void 
+    // switchAnimation方法，通过他调用动画 切换（开始 -> 结束、结束 -> 开始、中间切换）
+    switchAnimation: ()=>void 
 }
-
 ```
 #### 特殊cssName 设置
 颜色 --- color、'background-color'、'border-color'

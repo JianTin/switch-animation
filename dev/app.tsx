@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import SwitchAnimation from  '../src/index'
+import {wholeAnimation, segmentedAnimation} from  '../src/index'
 import {getInstanceEventValue} from '../@types'
 
 export default function(){
@@ -7,28 +7,30 @@ export default function(){
     const event = useRef<getInstanceEventValue| null>(null)
     const event2 = useRef<getInstanceEventValue | null>(null)
     useEffect(()=>{
-        event.current = new SwitchAnimation({
+        event.current = wholeAnimation({
             element: elementRef.current as HTMLDivElement,
             duration: 800,
-            targetStyle: {
+            animation: {
                 "translateX": {
                     startValue: "0",
                     endValue: "300",
                     unit: 'px'
                 }
             }
-        }).getInstanceEvent()
-        event2.current = new SwitchAnimation({
+        })
+        event2.current = segmentedAnimation({
             element: elementRef.current as HTMLDivElement,
             duration: 800,
-            targetStyle: {
-                "translateX": {
-                    startValue: "300",
-                    endValue: "600",
-                    unit: 'px'
+            animation: {
+                "0-800": {
+                    "translateX": {
+                        startValue: "300",
+                        endValue: "600",
+                        unit: 'px'
+                    }
                 }
             }
-        }).getInstanceEvent()
+        })
     }, [])
     return <>
         <button onClick={()=> event.current?.switchAnimation()}>switch</button>

@@ -1,18 +1,14 @@
 // 设置 value值
 import calculateInstance from './calculate'
 import {EasingFunction} from 'bezier-easing'
-import {configNamespace, styleNamespace} from '../@types/index'
-import {storeNamespace} from '../@types/store'
+import {configNamespace, styleNamespace} from '../../@types/animation'
+import {storeNamespace} from '../../@types/store'
+import {transformArray} from '../constant'
 
 class SetStyleValue {
     transformKey: Array<string>
     constructor(){
-        this.transformKey = [
-            'rotate', 'rotateX', 'rotateY', 'rotateZ' ,
-            'translateX', 'translateY', 'translateZ', 
-            'scaleX', 'scaleY', 'scaleZ', 
-            'skewX', 'skewY'
-        ]
+        this.transformKey = transformArray
     }
     set<T extends configNamespace.elementKey>(
         element: HTMLElementTagNameMap[T], styleStore: storeNamespace.styleStore, styleName: styleNamespace.styleName, runDate: number, direction:boolean, easingFn: EasingFunction

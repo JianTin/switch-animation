@@ -1,4 +1,4 @@
-// 存储基础style
+// 存储基础style、duration 每次new都会调用
 /**
  * styleStoreValue: {
  *      key: startValue、endValue、millisecond、distance、minValDistanceZero
@@ -16,11 +16,13 @@
  * all:
  * 0-1000': 
 */
-import easing from './easing'
+import easing from './publicClass/easing'
 import colorString from 'color-string'
-import {animationInstance, styleNamespace, configNamespace} from '../@types/index'
+import {animationInstance, styleNamespace, configNamespace} from '../@types/animation'
 import {storeNamespace} from '../@types/store'
+import {colorArry} from './constant'
 
+type colorNameArray = Array<styleNamespace.color>
 // 传递得value对象
 type paramsValueObj = {
     startValue: string, endValue: string
@@ -40,12 +42,12 @@ class Store {
     store: {
         [type: string]: storeNamespace.typeStore
     }
-    colorNameArray: Array<styleNamespace.color | 'border-color'>
+    colorNameArray: colorNameArray
     constructor(){
         // 全局的
         this.globalStore = null
         this.store = {}
-        this.colorNameArray = ['color', 'background-color', 'border-color']
+        this.colorNameArray = colorArry as colorNameArray
     }
     createType = (type: string)=>{
         if(!this.store[type]) {
@@ -71,7 +73,6 @@ class Store {
        } else {
            this.generateBaseStyle(type, name, valueObj, unit, duration)
        }
-       console.log(this.store)
     }
     // 添加当前实例
     addStoreInstance = (type: string, instance: animationInstance)=> {
