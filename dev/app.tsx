@@ -11,10 +11,31 @@ export default function(){
             element: elementRef.current as HTMLElement,
             initValue: '0',
             rangeConfig: {
-                '0-20': {
+                '0-100': {
+                    'translateX': {
+                        startValue: '0',
+                        endValue: '100',
+                        unit: 'px'
+                    }
+                },
+                '0-33': {
                     "background-color": {
-                        startValue: 'red',
-                        endValue: 'green',
+                        startValue: 'green',
+                        endValue: 'blue',
+                        unit: ''
+                    }
+                },
+                '33-66': {
+                    "background-color": {
+                        startValue: 'blue',
+                        endValue: 'yellow',
+                        unit: ''
+                    }
+                },
+                '66-99': {
+                    "background-color": {
+                        startValue: 'yellow',
+                        endValue: 'red',
                         unit: ''
                     }
                 }

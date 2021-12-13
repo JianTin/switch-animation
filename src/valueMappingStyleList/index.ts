@@ -2,6 +2,9 @@ import {styleNamespace} from '../../@types/animation'
 import {transformArray} from '../constant'
 import SetStyleValueInstance from '../publicClass/setStyle'
 import generateStyle from  './generate'
+// merge
+// 将相近的值合并 防止出现浮点值问题
+// 处理筛选问题
 
 // 类初始化 config
 export type mappingStyleConfig = {
@@ -69,28 +72,24 @@ export default class ValueMappingStyle{
     }
     // 初始化，生成 value -> cssList
     init(rangeConfig: mappingStyleConfig['rangeConfig'], initValue: string){
-        const {valueAnimation} = this
+        const {valueAnimation, mappingStyleList} = this
         Object.keys(rangeConfig).forEach((range)=>{
-            const {mappingStyleList} = this
             const [start, end] = range.split('-').map(Number)
             // 获取范围
-            const valueRange = end - start
+            const rangeValue = end - start
             const multipleStyleList = rangeConfig[range]
             // 每次范围 +0.1
             for(let v=start; v<=end; v+=0.1){
                 const currentValueMappingCss = Object.keys(multipleStyleList).reduce<{[styleName in styleNamespace.styleName]?: styleObj}>((prev, styleName)=>{
                     const styleList = multipleStyleList[styleName as styleNamespace.styleName]
                     if(!styleList)return prev;
-                    // const {startValue, endValue, unit} = styleList
-                    // const styleRange = Number(endValue) - Number(startValue)
-                    // // cssValue 在当前范围值内 占的值
-                    // const current = (styleRange / valueRange * v) + Number(startValue) + unit
-                    const styleValue = generateStyle(styleName as styleNamespace.styleName, styleList, valueRange, v)
+                    // v-start 原因：20-40，此时v为20。rangeValue为20。v是代表rangeValue当前占的值使用，不能大于他。需要减去因rangeStart导致出现v>rangeValue的情况
+                    const styleValue = generateStyle(styleName as styleNamespace.styleName, styleList, rangeValue, v - start)
                     console.log(styleValue)
                     prev[styleName  as styleNamespace.styleName] = {value: styleValue, unit: styleList.unit}
                     return prev
                 }, {})
-                const currentValue = String(v)
+                const currentValue = String(Number(v).toFixed(1))
                 // 没有添加新对象
                 if(!mappingStyleList.hasOwnProperty(currentValue)){
                     mappingStyleList[currentValue] = currentValueMappingCss
@@ -99,6 +98,7 @@ export default class ValueMappingStyle{
                 }
             }
         })
+        console.log(mappingStyleList)
         valueAnimation(Number(initValue))
     }
     // 设置 styleList
