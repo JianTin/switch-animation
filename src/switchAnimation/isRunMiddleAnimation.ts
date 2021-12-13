@@ -1,6 +1,6 @@
-import { storeInstance } from './../@types/store.d'
+import { storeInstance } from '../../@types/store'
 import Animation from './animation'
-import {configNamespace} from '../@types/animation'
+import {configNamespace} from '../../@types/animation'
 
 // 用于做 运行的中间 动画，处理
 class IsRunMiddleAnimation {

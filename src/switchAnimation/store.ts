@@ -16,11 +16,11 @@
  * all:
  * 0-1000': 
 */
-import easing from './publicClass/easing'
+import easing from '../publicClass/easing'
 import colorString from 'color-string'
-import {animationInstance, styleNamespace, configNamespace} from '../@types/animation'
-import {storeNamespace} from '../@types/store'
-import {colorArry} from './constant'
+import {animationInstance, styleNamespace, configNamespace} from '../../@types/animation'
+import {storeNamespace} from '../../@types/store'
+import {colorArry} from '../constant'
 
 type colorNameArray = Array<styleNamespace.color>
 // 传递得value对象

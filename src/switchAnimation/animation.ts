@@ -1,7 +1,7 @@
-import setStyleInstance from "./publicClass/setStyle"
+import setStyleInstance from "../publicClass/setStyle"
 import isRunMiddleInstance from './isRunMiddleAnimation'
-import {configNamespace, styleNamespace} from '../@types/animation'
-import {storeInstance} from '../@types/store'
+import {configNamespace, styleNamespace} from '../../@types/animation'
+import {storeInstance} from '../../@types/store'
 
 class Public <T extends configNamespace.elementKey>{
     duration: number

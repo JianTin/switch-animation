@@ -1,28 +1,6 @@
-import Store from "./store"
-import Animation from './animation'
-import {configNamespace, animationInstance} from '../@types/animation'
 import {wholeConfig, segmentedConfig} from '../@types/index'
-import {storeInstance} from '../@types/store'
-
-class SwitchAnimation<T extends configNamespace.elementKey>{
-    // 每次唯一的 storeInstance
-    storeInstance: storeInstance
-    animationInstance: animationInstance
-    constructor(elementConfig: configNamespace.animationConfig<T>){
-        this.storeInstance = new Store()
-        this.animationInstance = new Animation(elementConfig, this.storeInstance)
-    }
-    getInstanceEvent = ()=>{
-        const {startAnimation, switchAnimation} = this.animationInstance
-        const that = this
-        return {
-            // 保证更新 和 this指向
-            isAnimationShow: ()=> that.animationInstance.animationShow,
-            startAnimation,
-            switchAnimation
-        }
-    }
-}
+import SwitchAnimation from './switchAnimation'
+import MappingStyle,{mappingStyleConfig} from './valueMappingStyleList'
 
 export function wholeAnimation(config: wholeConfig){
     const switchAnimationConfig = Object.assign(config, {
@@ -43,4 +21,8 @@ export function segmentedAnimation(config: segmentedConfig){
     // delete 不需要的属性
     delete (switchAnimationConfig as any)['animation']
     return new SwitchAnimation(switchAnimationConfig).getInstanceEvent()
+}
+
+export function valueMappingAnimation(config: mappingStyleConfig){
+    return new MappingStyle(config).valueAnimation
 }
