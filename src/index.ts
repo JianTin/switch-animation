@@ -1,6 +1,5 @@
 import {wholeConfig, segmentedConfig} from '../@types/index'
 import SwitchAnimation from './switchAnimation'
-import MappingStyle,{mappingStyleConfig} from './valueMappingStyleList'
 
 export function wholeAnimation(config: wholeConfig){
     const switchAnimationConfig = Object.assign(config, {
@@ -21,8 +20,4 @@ export function segmentedAnimation(config: segmentedConfig){
     // delete 不需要的属性
     delete (switchAnimationConfig as any)['animation']
     return new SwitchAnimation(switchAnimationConfig).getInstanceEvent()
-}
-
-export function valueMappingAnimation(config: mappingStyleConfig){
-    return new MappingStyle(config).valueAnimation
 }
