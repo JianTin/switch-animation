@@ -4,6 +4,7 @@ import {bulitInEasing} from './easing'
 export namespace styleNamespace {
     type margin = 'margin' | 'margin-top' | 'margin-bottom' | 'margin-left' | 'margin-right'
     type border = 'border-width'
+    type borderRadius =  'border-radius' | 'border-top-left-radius' | 'border-top-right-radius' | 'border-bottom-right-radius' | 'border-bottom-left-radius'
     type padding = 'padding' | 'padding-top' | 'padding-bottom' | 'padding-left' | 'padding-right'
     type size = 'width' | 'height'
     type inset = 'left' | 'right' | 'top' | 'bottom'
@@ -14,7 +15,7 @@ export namespace styleNamespace {
     type skew = 'skewX' | 'skewY'
     export type shadow = 'box-shadow'
     export type transform = rotate | translate | scale | skew | 'perspective'
-    export type styleName = margin | padding | size | inset | color | transform  | border |'font-size' | 'opacity' | shadow
+    export type styleName = margin | padding | size | inset | color | transform  | border |'font-size' | 'opacity' | shadow | borderRadius
 }
 
 // config配置

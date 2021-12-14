@@ -95,14 +95,17 @@ switchAnimation()
 
 #### cssName支持情况
 不支持：  
-transform：我这边拆分为 单个变换，如 translateX、translateY、rotate、scaleX...
+transform：我这边拆分为 单个变换，如 translateX、translateY、rotate、scaleX...  
 translate: 可以通过 translateX + translateY 代替  
 scale: 可以通过 scaleX + scaleY 代替  
 border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  [border 例子](https://codesandbox.io/s/border-li-zi-jf2tl)  
-支持：  
+支持，但有限制：  
 box-shadow: 支持，但有格式限制（详情见下方） [阴影例子](https://codesandbox.io/s/yin-ying-li-zi-99cn7)  
+border-radius: 如果要设置单边 请通过 border-top-left-radius、border-top-right-radius... 等来设置。（下方例子）  
+支持：
 'margin' | 'margin-top' | 'margin-bottom' | 'margin-left' | 'margin-right'  
 'border-width' | 'border-color'  
+'border-radius' | 'border-top-left-radius' | 'border-top-right-radius' | 'border-bottom-right-radius' | 'border-bottom-left-radius'  
 'padding' | 'padding-top' | 'padding-bottom' | 'padding-left' | 'padding-right'  
 'width' | 'height'  
 'left' | 'right' | 'top' | 'bottom'  
@@ -182,7 +185,7 @@ animationEvemt {
     例：
         color: {
             startValue: 'green',
-            endValue: 'rgba()',
+            endValue: 'rgba(255, 0, 0, 0.5)',
             unit: ''
         }
 ```
@@ -196,6 +199,28 @@ box-shadow
         'box-shadow': {
             startValue: '0 0 0 0 black',
             endValue: '0 0 30 2 white',
+            unit: 'px'
+        }
+```
+border-radius  
+```
+    border-radius 只支持设置4角的值  
+    例:
+        'border-radius': {
+            startValue: '0',
+            endValue: '10',
+            unit: 'px'
+        }
+    单独 设置两个角
+    例:
+        'border-top-left-radius': {
+            startValue: '0',
+            endValue: '10',
+            unit: 'px'
+        },
+        'border-bottom-right-radius': {
+            startValue: '0',
+            endValue: '10',
             unit: 'px'
         }
 ```
