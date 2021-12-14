@@ -101,7 +101,7 @@ scale: 可以通过 scaleX + scaleY 代替
 border: 可以通过 border-color + border-width 代替，需要预先设置 element border样式  [border 例子](https://codesandbox.io/s/border-li-zi-jf2tl)  
 支持，但有限制：  
 box-shadow: 支持，但有格式限制（详情见下方） [阴影例子](https://codesandbox.io/s/yin-ying-li-zi-99cn7)  
-border-radius: 如果要设置单边 请通过 border-top-left-radius、border-top-right-radius... 等来设置。（下方例子）  
+border-radius: 如果要设置单边 请通过 border-top-left-radius、border-top-right-radius... 等来设置。[border-radius例子](https://codesandbox.io/s/border-radius-li-zi-e4fvk) 
 支持：
 'margin' | 'margin-top' | 'margin-bottom' | 'margin-left' | 'margin-right'  
 'border-width' | 'border-color'  
